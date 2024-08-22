@@ -1,0 +1,43 @@
+.dashboard i{
+    font-size: 30px;
+}
+
+
+
+.card-2 {
+    background-color: #317cec6e;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+
+}
+
+.dashboard h5{
+    font-size: 30px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    font-family: 'Roboto', sans-serif;
+    color: black;
+}
+
+.dashboard p {
+    font-size: 16px;
+    font-weight: 500;
+    color: black;
+    font-family: 'Inter', sans-serif;
+
+}
+
+.card-body {
+    border-radius: 1.5px;
+    border-color: darkgray;
+    border-width: 1px;
+
+}
+
+.card-body:hover {
+    background-color: rgba(222, 222, 226, 0.171);
+    transition: 0.3s ease;
+    color: white;
+    
+}

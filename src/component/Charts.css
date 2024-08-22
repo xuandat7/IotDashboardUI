@@ -1,0 +1,16 @@
+
+.card-body {
+   position: "relative",
+   
+}
+
+.card-body .btn-group {
+    position: absolute;
+    top: 0;
+    right: 0px;
+    /* left: 0; */
+}
+
+.chart-btn {
+    display: none;
+}

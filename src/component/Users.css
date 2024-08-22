@@ -1,0 +1,62 @@
+/* Users.css */
+
+
+.user-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-card {
+    display: flex;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+    background-color: #f9f9f9;
+}
+
+.user-image {
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+}
+
+.user-info {
+    padding: 20px;
+    flex-grow: 1;
+}
+
+.user-info h2 {
+    margin: 0;
+    font-size: 28px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    font-family: 'Inter', sans-serif;
+}
+
+.separator {
+    border: 0;
+    height: 2px;
+    background-color: #3f3a3a;
+    margin: 15px 0;
+}
+
+.user-details {
+    width: 100%;
+    border-spacing: 0;
+    margin-top: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+}
+
+.user-details td {
+    padding: 8px 0;
+    /* font-size: 1.1em; */
+}
+
+.user-details td:first-child {
+    padding-right: 10px;
+    text-align: left;
+    white-space: nowrap;
+}

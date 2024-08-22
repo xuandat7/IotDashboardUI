@@ -1,0 +1,32 @@
+.card-switch {
+    height: 400px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  
+}
+
+
+.card:hover {
+    background-color: rgba(40, 36, 36, 0.089);
+    transition: 0.3s ease;
+    color: var(--primary);
+}
+
+.toggle {
+
+    width: 100px;
+    height: 40px;
+    background-color: #1c19b6;
+    border-radius: 3px;
+    padding: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.toggle h5 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 3px;
+    font-family: 'Inter', sans-serif;
+}

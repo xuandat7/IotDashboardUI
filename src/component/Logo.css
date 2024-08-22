@@ -1,0 +1,23 @@
+.logo {
+    line-height: 1;
+}
+
+@media (max-width: 1200px) {
+    .logo {
+        width: 280px;
+    }
+}
+
+.logo img {
+    max-width: 26px;
+    margin-right: 6px;
+}
+
+.logo span {
+    font-size: 26px;
+    font-weight: 700;
+    color: #012970;
+    font-family: 'Inter', sans-serif;
+    text-decoration: none;
+    padding-right: 10px;
+}

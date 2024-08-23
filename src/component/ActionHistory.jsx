@@ -9,7 +9,8 @@ function ActionHistory() {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const rowsPerPage = 5; // Number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  // const rowsPerPage = 5; // Number of rows per page
 
   // Handle search functionality
   const handleSearch = (event) => {
@@ -67,8 +68,21 @@ function ActionHistory() {
       <h2 className="text-left">Action History</h2>
 
       {/* Search Bar and Sort Dropdown */}
-      <div className="row mt-4 mb-3">
-        <div className="col-md-10">
+      <div className="row mt-3 mb-3">
+        <div className="col-lg-2">
+          <div className="form-group d-flex align-items-center">
+            <label>Rows:</label>
+            <input
+              type="number"
+              className="form-control mx-2"
+              value={rowsPerPage}
+              onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
+              min="1"
+            />
+          </div>
+        </div>
+
+        <div className="col-md-8">
           <input
             type="text"
             className="form-control"
@@ -79,8 +93,8 @@ function ActionHistory() {
           />
         </div>
         <div className="col-md-2">
-          <select className="form-control" onChange={handleSort}> 
-            <option value="id" >Sort by ID ↑</option>
+          <select className="form-control" onChange={handleSort}>
+            <option value="id">Sort by ID ↑</option>
             <option value="-id">Sort by ID ↓</option>
             <option value="name">Sort by Name</option>
             <option value="-name">Sort by Name (reverse)</option>

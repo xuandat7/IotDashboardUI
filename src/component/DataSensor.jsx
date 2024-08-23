@@ -10,7 +10,8 @@ function DataSensor() {
 
   // Pagination States
   const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const rowsPerPage = 5; // Number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  // const rowsPerPage = 5; // Number of rows per page
 
   // Handle search functionality
   const handleSearch = (event) => {
@@ -75,7 +76,19 @@ function DataSensor() {
     <main id="main" className="main">
       <h2 className="text-left">Data Sensor</h2>
       <div className="row mb-3 mt-3">
-        <div className="col-lg-9">
+      <div className="col-lg-2">
+          <div className="form-group d-flex align-items-center">
+            <label>Rows:</label>
+            <input
+              type="number"
+              className="form-control mx-2 "
+              value={rowsPerPage}
+              onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
+              min="1"
+            />
+          </div>
+        </div>
+        <div className="col-lg-8">
           <input
             type="text"
             className="form-control"
@@ -85,7 +98,7 @@ function DataSensor() {
             style={{ width: "100%" }}
           />
         </div>
-        <div className="col-lg-3">
+        <div className="col-lg-2">
           <select
             className="form-control"
             onChange={handleSort}
@@ -100,7 +113,6 @@ function DataSensor() {
         </div>
       </div>
       {/* Search Bar and Sort Dropdown */}
-      
 
       {/* Table */}
       <table className="table table-bordered table-hover">
@@ -135,6 +147,7 @@ function DataSensor() {
           )}
         </tbody>
       </table>
+
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
@@ -178,6 +191,7 @@ function DataSensor() {
           </ul>
         </nav>
       )}
+
     </main>
   );
 }

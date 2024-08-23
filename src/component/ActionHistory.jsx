@@ -25,10 +25,10 @@ function ActionHistory() {
 
     switch (sortBy) {
       case "id":
-        sortedData = [...data].sort((a, b) => a.id - b.id);
+        sortedData = [...data].sort((a, b) => a.ID - b.ID);
         break;
       case "-id":
-        sortedData = [...data].sort((a, b) => b.id - a.id);
+        sortedData = [...data].sort((a, b) => b.ID - a.ID);
         break;
       case "name":
         sortedData = [...data].sort((a, b) => a.Name.localeCompare(b.Name));
@@ -91,7 +91,7 @@ function ActionHistory() {
 
       {/* Table */}
       <table className="table table-bordered table-hover">
-        <thead className="thead-light">
+        <thead className="table-light">
           <tr>
             {columns.map((colName, index) => (
               <th key={index} scope="col">

@@ -12,6 +12,7 @@ function Users() {
     id: "B21DCCN223",
     nhomMH: "Lớp Iot và Ứng dụng - Nhóm 5",
     imageUrl: userPic, // Placeholder image, replace with actual 4x6 image
+    linkGitHub: "https://github.com/xuandat7/IotDashboardUI"
     
   };
 
@@ -40,6 +41,10 @@ function Users() {
                 <tr>
                   <td><strong>Nhóm môn học:</strong></td>
                   <td>{user.nhomMH}</td>
+                </tr>
+                <tr>
+                  <td><strong>Link GitHub:</strong></td>
+                  <td>{user.linkGitHub}</td>
                 </tr>
               </tbody>
             </table>

@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import sensorData from '../data/sensorData.json'; // Import JSON data
+import React, { useState } from "react";
+import sensorData from "../data/sensorData.json"; // Import JSON data
 
 function DataSensor() {
   const [data, setData] = useState(sensorData.rows); // Load the rows from JSON file
   const [columns] = useState(sensorData.columns); // Load the columns from JSON file
-  const [searchTerm, setSearchTerm] = useState(''); // State for search term
+  const [searchTerm, setSearchTerm] = useState(""); // State for search term
+  const [sortBy, setSortBy] = useState("id"); // State to track sorting column
   const [isAscending, setIsAscending] = useState(true); // State to track sorting order
 
   // Pagination States
@@ -19,12 +20,37 @@ function DataSensor() {
   };
 
   // Handle sort functionality
-  const handleSort = () => {
-    const sortedData = [...data].sort((a, b) =>
-      isAscending ? a.id - b.id : b.id - a.id
-    );
+  const handleSort = (event) => {
+    const sortBy = event.target.value;
+    let sortedData;
+
+    switch (sortBy) {
+      case "id":
+        sortedData = [...data].sort((a, b) => a.ID - b.ID);
+        break;
+      case "-id":
+        sortedData = [...data].sort((a, b) => b.ID - a.ID);
+        break;
+      case "Name":
+        sortedData = [...data].sort((a, b) => a.Name.localeCompare(b.Name));
+        break;
+      case "-Name":
+        sortedData = [...data].sort((a, b) => b.Name.localeCompare(a.Name));
+        break;
+      // Add more cases as needed
+      default:
+        sortedData = data;
+    }
+
     setData(sortedData);
-    setIsAscending(!isAscending);
+  };
+
+  // When dropdown changes, update the sorting state and trigger sorting
+  const handleDropdownChange = (e) => {
+    const [column, order] = e.target.value.split("-");
+    setSortBy(column);
+    setIsAscending(order === "asc");
+    handleSort(e);
   };
 
   // Filtered data based on search term
@@ -48,27 +74,37 @@ function DataSensor() {
   return (
     <main id="main" className="main">
       <h2 className="text-left">Data Sensor</h2>
-
-      {/* Search Bar and Sort Button */}
-      <div className="d-flex justify-content-between mb-3">
-        <input
-          type="text"
-          className="form-control"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={handleSearch}
-          style={{ width: '50%' }}
-        />
-
-        {/* Sort Button */}
-        <button className="btn btn-primary ml-3" onClick={handleSort}>
-          Sort by ID {isAscending ? '↑' : '↓'}
-        </button>
+      <div className="row mb-3 mt-3">
+        <div className="col-lg-9">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={handleSearch}
+            style={{ width: "100%" }}
+          />
+        </div>
+        <div className="col-lg-3">
+          <select
+            className="form-control"
+            onChange={handleSort}
+            style={{ width: "100%" }}
+          >
+            <option value="id">Sort by ID ↑</option>
+            <option value="-id">Sort by ID ↓</option>
+            <option value="Name">Sort by Name</option>
+            <option value="-Name">Sort by Name (reverse)</option>
+            {/* Add more options for other columns if needed */}
+          </select>
+        </div>
       </div>
+      {/* Search Bar and Sort Dropdown */}
+      
 
       {/* Table */}
       <table className="table table-bordered table-hover">
-        <thead className="thead-light">
+        <thead className="table-light">
           <tr>
             {columns.map((colName, index) => (
               <th key={index} scope="col">
@@ -80,14 +116,14 @@ function DataSensor() {
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row) => (
-              <tr key={row.id}>
-                <th scope="row">{row.id}</th>
+              <tr key={row.ID}>
+                <th scope="row">{row.ID}</th>
                 <td>{row.Name}</td>
                 <td>{row.Humidity}</td>
                 <td>{row.Temperature}</td>
                 <td>{row.Light}</td>
-                <td>{row.Ran === true ? 'Yes' : 'No'}</td>
-                <td>{row['Time Update']}</td>
+                <td>{row.Ran === true ? "Yes" : "No"}</td>
+                <td>{row["Time Update"]}</td>
               </tr>
             ))
           ) : (
@@ -104,7 +140,7 @@ function DataSensor() {
       {totalPages > 1 && (
         <nav>
           <ul className="pagination justify-content-center">
-            <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+            <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
               <button
                 className="page-link"
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -116,7 +152,7 @@ function DataSensor() {
               <li
                 key={number + 1}
                 className={`page-item ${
-                  currentPage === number + 1 ? 'active' : ''
+                  currentPage === number + 1 ? "active" : ""
                 }`}
               >
                 <button
@@ -129,7 +165,7 @@ function DataSensor() {
             ))}
             <li
               className={`page-item ${
-                currentPage === totalPages ? 'disabled' : ''
+                currentPage === totalPages ? "disabled" : ""
               }`}
             >
               <button

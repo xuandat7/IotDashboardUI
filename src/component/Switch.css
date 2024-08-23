@@ -3,14 +3,14 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-  
+
 }
 
 
 .card:hover {
     background-color: rgba(40, 36, 36, 0.089);
     transition: 0.3s ease;
-    color: var(--primary);
+
 }
 
 .toggle {
@@ -30,3 +30,38 @@
     margin-bottom: 3px;
     font-family: 'Inter', sans-serif;
 }
+
+/* Define the animation */
+@keyframes brighten {
+    0% {
+        filter: brightness(100%);
+    }
+
+    100% {
+        filter: brightness(150%);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Apply the animation to the icon */
+.animate-icon {
+    animation: brighten 1s linear infinite alternate;
+}
+
+.icon-on {
+    filter: brightness(1.5); /* or any other effect you want to achieve */
+    color: var(--primary);
+  }
+
+  .icon-fan-on {
+    animation: spin 1s linear infinite;
+  }

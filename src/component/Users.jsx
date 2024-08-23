@@ -10,7 +10,7 @@ function Users() {
     email: "xuandattran2003@gmail.com",
     classTC: "D21CNPM04",
     id: "B21DCCN223",
-    nhomMH: "Lớp Iot và Ứng dụng - Nhóm 5",
+    nhomMH: "Lớp IoT và Ứng dụng - Nhóm 5",
     imageUrl: userPic, // Placeholder image, replace with actual 4x6 image
     linkGitHub: "https://github.com/xuandat7/IotDashboardUI"
     
@@ -44,7 +44,7 @@ function Users() {
                 </tr>
                 <tr>
                   <td><strong>Link GitHub:</strong></td>
-                  <td>{user.linkGitHub}</td>
+                  <td> <a href='https://github.com/xuandat7/IotDashboardUI'>{user.linkGitHub}</a></td>
                 </tr>
               </tbody>
             </table>

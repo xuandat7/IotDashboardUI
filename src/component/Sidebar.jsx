@@ -9,6 +9,12 @@ function Sidebar() {
         <aside id="sidebar" className="sidebar">
             <ul className="sidebar-nav" id="sidebar-nav">
                 <li className="nav-item" >
+                    <Link to ="/" className="nav-link active">
+                        <i className="bi bi-house-door-fill"></i>
+                        <span>Home</span>
+                    </Link>
+                </li>
+                <li className="nav-item" >
                     <Link to ="/dataSensor" className="nav-link active">
                         <i className="bi bi-clipboard-data-fill"></i>
                         <span>Data Sensor</span>

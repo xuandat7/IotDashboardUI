@@ -1,37 +1,37 @@
 import React from "react";
 import "./Dashboard.css";
-import { useState } from 'react';
+import { useState } from "react";
 
 function Dashboard() {
-  const [temperature, setTemperature] = useState(38);
+  const [temperature, setTemperature] = useState(30);
   const [humidity, setHumidity] = useState(55);
   const [light, setLight] = useState(80);
 
   const getTemperatureGradient = (temp) => {
-    if (temp > 30) {
-      return 'linear-gradient(to right, #ff5f6d, #ffc371)'; // Hot (Red Gradient)
+    if (temp > 31) {
+      return "linear-gradient(to right, #ff5f6d, #ffc371)"; // Hot (Red Gradient)
     } else if (temp < 18) {
-      return 'linear-gradient(to right, #6dd5fa, #2980b9)'; // Cold (Blue Gradient)
+      return "linear-gradient(to right, #4facfe, #00f2fe)"; // Cold (Blue Gradient)
     }
-    return 'linear-gradient(to right, #89f7fe, #66a6ff)'; // Normal (Cool Blue Gradient)
+    return "linear-gradient(to right, #a1c4fd, #c2e9fb)"; // Normal (Cool Blue Gradient)
   };
 
   const getHumidityGradient = (humid) => {
     if (humid > 70) {
-      return 'linear-gradient(to right, #83a4d4, #b6fbff)'; // High Humidity (Light Blue Gradient)
+      return "linear-gradient(to right, #3a7bd5, #3a6073)"; // High Humidity (Light Blue Gradient)
     } else if (humid < 30) {
-      return 'linear-gradient(to right, #ffecd2, #fcb69f)'; // Low Humidity (Warm Gradient)
+      return "linear-gradient(to right, #f6d365, #fda085)"; // Low Humidity (Warm Gradient)
     }
-    return 'linear-gradient(to right, #89f7fe, #66a6ff)'; // Normal Humidity (Cool Blue Gradient)
+    return "linear-gradient(to right, #89f7fe, #66a6ff)"; // Normal Humidity (Cool Blue Gradient)
   };
 
   const getLightGradient = (lux) => {
     if (lux > 100) {
-      return 'linear-gradient(to right, #f7971e, #ffd200)'; // High Light (Yellow Gradient)
+      return "linear-gradient(to right, #f7971e, #ffd200)"; // High Light (Yellow Gradient)
     } else if (lux < 40) {
-      return 'linear-gradient(to right, #a1c4fd, #c2e9fb)'; // Low Light (Cool Light Gradient)
+      return "linear-gradient(to right, #a1c4fd, #c2e9fb)"; // Low Light (Cool Light Gradient)
     }
-    return 'linear-gradient(to right, #fdfbfb, #ebedee)'; // Normal Light (Neutral Gradient)
+    return "linear-gradient(to right, #fdfbfb, #ebedee)"; // Normal Light (Neutral Gradient)
   };
 
   return (
@@ -44,18 +44,24 @@ function Dashboard() {
             className="card"
             style={{
               background: getTemperatureGradient(temperature),
-            //   transition: 'background 0.5s ease-in-out', // Transition for background color
-            //   willChange: 'background', // Optimize for animation,
+              //   transition: 'background 0.5s ease-in-out', // Transition for background color
+              //   willChange: 'background', // Optimize for animation,
             }}
           >
             <div className="card-body">
               <div className="d-flex justify-content-between">
                 <i className="bi bi-thermometer icon"></i>
+                {temperature < 14 && <i className="bi bi-snow2"></i>}
+                {temperature > 31 && <i className="bi bi-brightness-high-fill"></i>}
                 <div className="text-right text-dark">
                   <h5>{temperature}°C</h5>
                   <p>Nhiệt độ</p>
                   <small className="text-muted">
-                    {temperature > 30 ? "High" : temperature < 18 ? "Low" : "Normal"}
+                    {temperature > 30
+                      ? "High"
+                      : temperature < 18
+                      ? "Low"
+                      : "Normal"}
                   </small>
                   <input
                     type="range"
@@ -64,7 +70,7 @@ function Dashboard() {
                     value={temperature}
                     onChange={(e) => setTemperature(e.target.value)}
                     className="form-range mt-3"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </div>
               </div>
@@ -78,7 +84,7 @@ function Dashboard() {
             className="card"
             style={{
               background: getHumidityGradient(humidity),
-              transition: 'background 0.5s ease-in-out', // Transition for background color
+              transition: "background 0.5s ease-in-out", // Transition for background color
             }}
           >
             <div className="card-body">
@@ -97,7 +103,7 @@ function Dashboard() {
                     value={humidity}
                     onChange={(e) => setHumidity(e.target.value)}
                     className="form-range mt-3"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </div>
               </div>
@@ -111,7 +117,7 @@ function Dashboard() {
             className="card"
             style={{
               background: getLightGradient(light),
-              transition: 'background 0.5s ease', // Transition for background color
+              transition: "background 0.5s ease", // Transition for background color
             }}
           >
             <div className="card-body">
@@ -130,7 +136,7 @@ function Dashboard() {
                     value={light}
                     onChange={(e) => setLight(e.target.value)}
                     className="form-range mt-3"
-                    style={{ width: '100%' }}
+                    style={{ width: "100%" }}
                   />
                 </div>
               </div>

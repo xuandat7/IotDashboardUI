@@ -38,7 +38,7 @@
     }
 
     100% {
-        filter: brightness(150%);
+        filter: brightness(350%);
     }
 }
 
@@ -65,3 +65,4 @@
   .icon-fan-on {
     animation: spin 1s linear infinite;
   }
+

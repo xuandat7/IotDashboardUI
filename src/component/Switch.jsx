@@ -11,15 +11,16 @@ function Switch() {
   return (
     <section className="switch section">
       <div className="row">
-        <div className="card card-switch mt-5" style={{ height: "400px" }}>
+        <div className="card card-switch mt-3" style={{ height: "520px" }}>
           {/* Temperature Switch */}
+            <h6>Điều khiển nhiệt độ</h6>
           <div className="temp-switch d-flex align-items-center">
             <i
-              className={`bi bi-thermometer ${TempChecked ? "icon-on" : ""}`}
+              className={`bi bi-thermometer ${TempChecked ? "icon-on animate-icon" : ""}`}
               style={{ fontSize: "30px" }}
-            ></i>
+              ></i>
             <Toggle
-              className="toggle mx-4 toggle-handle"
+              className="toggle mx-2 toggle-handle"
               onClick={() => TempSetChecked(!TempChecked)}
               on={<h5>On</h5>}
               off={<h5>Off</h5>}
@@ -27,17 +28,18 @@ function Switch() {
               active={TempChecked}
               onstyle="success"
               offstyle="secondary"
-            />
+              />
           </div>
 
           {/* Humidity Switch */}
+              <h6>Điều khiển quạt</h6>
           <div className="humidity-switch d-flex align-items-center">
             <i
               className={`bi bi-fan icon ${FanChecked ? "icon-on icon-fan-on" : ""}`}
               style={{ fontSize: "30px" }}
-            ></i>
+              ></i>
             <Toggle
-              className="toggle mx-4"
+              className="toggle mx-2"
               onClick={() => FanSetChecked(!FanChecked)}
               on={<h5>On</h5>}
               off={<h5>Off</h5>}
@@ -49,13 +51,14 @@ function Switch() {
           </div>
 
           {/* Light Switch */}
+              <h6>Điều khiển đèn</h6>
           <div className="light-switch d-flex align-items-center">
             <i
-              className={`bi bi-lightbulb icon ${LightChecked ? "icon-on" : ""}`}
+              className={`bi bi-lightbulb icon ${LightChecked ? "icon-on animate-icon" : ""}`}
               style={{ fontSize: "30px" }}
             ></i>
             <Toggle
-              className="toggle mx-4"
+              className="toggle mx-2"
               onClick={() => LightSetChecked(!LightChecked)}
               on={<h5>On</h5>}
               off={<h5>Off</h5>}

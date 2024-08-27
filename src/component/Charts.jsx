@@ -1,101 +1,105 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Chart, registerables} from "chart.js";
-import tempData from "../data/tempData.json";
-import humidData from "../data/humidData.json";
-import lightData from "../data/lightData.json";
+import { Chart, registerables } from "chart.js";
+import combinedData from "../data/combinedData.json";
 import "./Charts.css";
 
 function Charts() {
   Chart.register(...registerables);
-  const [currentChart, setCurrentChart] = useState("temperature");
   const chartRef = useRef(null);
+  const chartInstanceRef = useRef(null);
+
+  const fetchData = () => {
+    // Simulate fetching new data
+    const newTemperature = Math.floor(Math.random() * 10) + 20;
+    const newHumidity = Math.floor(Math.random() * 20) + 30;
+    const newBrightness = Math.floor(Math.random() * 100) + 100;
+
+    return {
+      temperature: newTemperature,
+      humidity: newHumidity,
+      brightness: newBrightness,
+      time: new Date().toLocaleTimeString()
+    };
+  };
 
   useEffect(() => {
     const ctx = chartRef.current.getContext("2d");
-    let chartData;
-    switch (currentChart) {
-      case "temperature":
-        chartData = tempData;
-        break;
-      case "humidity":
-        chartData = humidData;
-        break;
-      case "brightness":
-        chartData = lightData;
-        break;
-      default:
-        chartData = tempData;
+
+    if (chartInstanceRef.current) {
+      chartInstanceRef.current.destroy();
     }
-    const chart = new Chart(ctx, {
+
+    chartInstanceRef.current = new Chart(ctx, {
       type: "line",
-      data: chartData,
+      data: {
+        labels: combinedData.labels,
+        datasets: combinedData.datasets
+      },
       options: {
         title: {
           display: true,
-          text: `${currentChart.charAt(0).toUpperCase()}${currentChart.slice(
-            1
-          )} Chart`,
+          text: "Temperature, Humidity, and Brightness Chart",
         },
         scales: {
           y: {
-            type: 'linear',
             beginAtZero: true,
             title: {
               display: true,
-              text: `${currentChart
-                .charAt(0)
-                .toUpperCase()}${currentChart.slice(1)}`,
+              text: "Values",
             },
           },
           x: {
-            type: 'category',
+            title: {
+              display: true,
+              text: "Time",
+            },
           },
         },
       },
     });
-    return () => {
-      chart.destroy();
-    };
-  }, [currentChart]);
 
-  const handleChartChange = (chartType) => {
-    setCurrentChart(chartType);
-  };
+    const updateChart = () => {
+      const newData = fetchData();
+
+      // Update data arrays
+      combinedData.labels.push(newData.time);
+      combinedData.datasets[0].data.push(newData.temperature);
+      combinedData.datasets[1].data.push(newData.humidity);
+      combinedData.datasets[2].data.push(newData.brightness);
+
+      // Keep only the last 15 data points
+      if (combinedData.labels.length > 10) {
+        combinedData.labels.shift();
+        combinedData.datasets[0].data.shift();
+        combinedData.datasets[1].data.shift();
+        combinedData.datasets[2].data.shift();
+      }
+
+      // Update chart
+      chartInstanceRef.current.data.labels = combinedData.labels;
+      chartInstanceRef.current.data.datasets.forEach((dataset, index) => {
+        dataset.data = combinedData.datasets[index].data;
+      });
+      chartInstanceRef.current.update();
+    };
+
+    const intervalId = setInterval(updateChart, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+    };
+  }, []);
 
   return (
     <section className="charts section">
       <div className="row">
-        <div className="col-md-12 mt-5">
+        <div className="col-md-12 mt-3">
           <div className="card h-100">
-            <div className="card-body" style={{ height: "400px" }}>
-              {/* Chart 1 */}
-              <canvas id="" ref={chartRef}></canvas>
-              <div
-                className="btn-group btn-group-toggle float-right mt-2 mx-2"
-                // style={{ marginTop: -40 }}
-              >
-                <label className={currentChart === "temperature" ? "btn btn-secondary btn-sm active" : "btn btn-secondary btn-sm"}>
-                  <button className="chart-btn"
-                    type="button"
-                    onClick={() => handleChartChange("temperature")}
-                  ></button>
-                  Temp
-                </label>
-                <label className={currentChart === "humidity" ? "btn btn-secondary btn-sm active" : "btn btn-secondary btn-sm"}>
-                  <button className="chart-btn"
-                    type="button"
-                    onClick={() => handleChartChange("humidity")}
-                  ></button>
-                  Humid
-                </label>
-                <label className={currentChart === "brightness" ? "btn btn-secondary btn-sm active" : "btn btn-secondary btn-sm"}>
-                  <button className="chart-btn"
-                    type="button"
-                    onClick={() => handleChartChange("brightness")}
-                  ></button>
-                  Bright
-                </label>
-              </div>
+            <div className="card-body" style={{ height: "520px" }}>
+              <canvas id="combinedChart" ref={chartRef}></canvas>
             </div>
           </div>
         </div>

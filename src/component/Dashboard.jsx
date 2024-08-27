@@ -1,51 +1,64 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Charts from "./Charts";
 import "./Dashboard.css";
-import { useState } from "react";
 
 function Dashboard() {
-  const [temperature, setTemperature] = useState(30);
-  const [humidity, setHumidity] = useState(55);
-  const [light, setLight] = useState(80);
+  const [temperature, setTemperature] = useState();
+  const [humidity, setHumidity] = useState();
+  const [brightness, setBrightness] = useState();
+
+  const fetchData = () => {
+    // Simulate fetching new data
+    const newTemperature = Math.floor(Math.random() * 10) + 20;
+    const newHumidity = Math.floor(Math.random() * 20) + 30;
+    const newBrightness = Math.floor(Math.random() * 100) + 100;
+
+    return {
+      temperature: newTemperature,
+      humidity: newHumidity,
+      brightness: newBrightness,
+    };
+  };
+
+  useEffect(() => {
+    const updateData = () => {
+      const newData = fetchData();
+      setTemperature(newData.temperature);
+      setHumidity(newData.humidity);
+      setBrightness(newData.brightness);
+    };
+
+    const intervalId = setInterval(updateData, 5000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const getTemperatureGradient = (temp) => {
-    if (temp > 31) {
-      return "linear-gradient(to right, #ff5f6d, #ffc371)"; // Hot (Red Gradient)
-    } else if (temp < 18) {
-      return "linear-gradient(to right, #4facfe, #00f2fe)"; // Cold (Blue Gradient)
-    }
-    return "linear-gradient(to right, #a1c4fd, #c2e9fb)"; // Normal (Cool Blue Gradient)
+    if (temp < 14) return "linear-gradient(to right, #00f, #0ff)";
+    if (temp > 31) return "linear-gradient(to right, #f00, #ff0)";
+    return "linear-gradient(to right, #0f0, #ff0)";
   };
 
   const getHumidityGradient = (humid) => {
-    if (humid > 70) {
-      return "linear-gradient(to right, #3a7bd5, #3a6073)"; // High Humidity (Light Blue Gradient)
-    } else if (humid < 30) {
-      return "linear-gradient(to right, #f6d365, #fda085)"; // Low Humidity (Warm Gradient)
-    }
-    return "linear-gradient(to right, #89f7fe, #66a6ff)"; // Normal Humidity (Cool Blue Gradient)
+    if (humid > 70) return "linear-gradient(to right, #3a7bd5, #3a6073)";
+    if (humid < 30) return "linear-gradient(to right, #f6d365, #fda085)";
+    return "linear-gradient(to right, #89f7fe, #66a6ff)";
   };
 
   const getLightGradient = (lux) => {
-    if (lux > 100) {
-      return "linear-gradient(to right, #f7971e, #ffd200)"; // High Light (Yellow Gradient)
-    } else if (lux < 40) {
-      return "linear-gradient(to right, #a1c4fd, #c2e9fb)"; // Low Light (Cool Light Gradient)
-    }
-    return "linear-gradient(to right, #fdfbfb, #ebedee)"; // Normal Light (Neutral Gradient)
+    if (lux > 100) return "linear-gradient(to right, #f7971e, #ffd200)";
+    if (lux < 40) return "linear-gradient(to right, #a1c4fd, #c2e9fb)";
+    return "linear-gradient(to right, #fdfbfb, #ebedee)";
   };
 
   return (
-    <section className="dashboard section">
-      <h3 className="text-left">Dashboard</h3>
+    <div className="dashboard">
       <div className="row">
-        {/* Temperature Card */}
-        <div className="col-lg-4 col-md-6">
+        <div className="col-lg-4">
           <div
             className="card"
             style={{
               background: getTemperatureGradient(temperature),
-              //   transition: 'background 0.5s ease-in-out', // Transition for background color
-              //   willChange: 'background', // Optimize for animation,
             }}
           >
             <div className="card-body">
@@ -63,15 +76,7 @@ function Dashboard() {
                       ? "Low"
                       : "Normal"}
                   </small>
-                  <input
-                    type="range"
-                    min="0"
-                    max="40"
-                    value={temperature}
-                    onChange={(e) => setTemperature(e.target.value)}
-                    className="form-range mt-3"
-                    style={{ width: "100%" }}
-                  />
+                  
                 </div>
               </div>
             </div>
@@ -79,7 +84,7 @@ function Dashboard() {
         </div>
 
         {/* Humidity Card */}
-        <div className="col-lg-4 col-md-6">
+        <div className="col-md-4">
           <div
             className="card"
             style={{
@@ -96,55 +101,39 @@ function Dashboard() {
                   <small className="text-muted">
                     {humidity > 70 ? "High" : humidity < 30 ? "Low" : "Normal"}
                   </small>
-                  <input
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={humidity}
-                    onChange={(e) => setHumidity(e.target.value)}
-                    className="form-range mt-3"
-                    style={{ width: "100%" }}
-                  />
+                  
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Light Card */}
-        <div className="col-lg-4 col-md-6">
+        {/* Brightness Card */}
+        <div className="col-md-4">
           <div
             className="card"
             style={{
-              background: getLightGradient(light),
+              background: getLightGradient(brightness),
               transition: "background 0.5s ease", // Transition for background color
             }}
           >
             <div className="card-body">
               <div className="d-flex justify-content-between">
-                <i className="bi bi-lightbulb-fill icon"></i>
+                <i className="bi bi-brightness-high icon"></i>
                 <div className="text-right">
-                  <h5>{light} lux</h5>
-                  <p>Ánh sáng</p>
+                  <h5>{brightness} lux</h5>
+                  <p>Độ sáng</p>
                   <small className="text-muted">
-                    {light > 100 ? "High" : light < 40 ? "Low" : "Normal"}
+                    {brightness > 100 ? "High" : brightness < 40 ? "Low" : "Normal"}
                   </small>
-                  <input
-                    type="range"
-                    min="0"
-                    max="200"
-                    value={light}
-                    onChange={(e) => setLight(e.target.value)}
-                    className="form-range mt-3"
-                    style={{ width: "100%" }}
-                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </section>
+
+    </div>
   );
 }
 

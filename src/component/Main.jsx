@@ -5,6 +5,9 @@ import Charts from "./Charts";
 import Switch from "./Switch";
 import Users from "./Users";
 function Main() {
+
+
+  
   return (
     <main id="main" className="main">
       <Dashboard />

@@ -134,7 +134,7 @@ function DataSensor() {
                 <td>{row.Humidity}</td>
                 <td>{row.Temperature}</td>
                 <td>{row.Light}</td>
-                <td>{row.Ran === true ? "Yes" : "No"}</td>
+                {/* <td>{row.Ran === true ? "Yes" : "No"}</td> */}
                 <td>{row["Time Update"]}</td>
               </tr>
             ))

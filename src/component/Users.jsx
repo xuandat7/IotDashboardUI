@@ -12,8 +12,8 @@ function Users() {
     id: "B21DCCN223",
     nhomMH: "Lớp IoT và Ứng dụng - Nhóm 5",
     imageUrl: userPic, // Placeholder image, replace with actual 4x6 image
-    linkGitHub: "https://github.com/xuandat7/IotDashboardUI"
-    
+    linkGitHub: "https://github.com/xuandat7/IotDashboardUI",
+    FilePDF: "https://docs.google.com/document/u/0/"
   };
 
   return (
@@ -45,6 +45,10 @@ function Users() {
                 <tr>
                   <td><strong>Link GitHub:</strong></td>
                   <td> <a href='https://github.com/xuandat7/IotDashboardUI'>{user.linkGitHub}</a></td>
+                </tr>
+                <tr>
+                  <td><strong>Link PDF:</strong></td>
+                  <td> <a href='https://docs.google.com/document/u/0/'>{user.FilePDF}</a></td>
                 </tr>
               </tbody>
             </table>

@@ -3,9 +3,9 @@ import Charts from "./Charts";
 import "./Dashboard.css";
 
 function Dashboard() {
-  const [temperature, setTemperature] = useState();
-  const [humidity, setHumidity] = useState();
-  const [brightness, setBrightness] = useState();
+  const [temperature, setTemperature] = useState(42);
+  const [humidity, setHumidity] = useState(40);
+  const [brightness, setBrightness] = useState(10);
 
   const fetchData = () => {
     // Simulate fetching new data

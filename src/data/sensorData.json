@@ -1,13 +1,13 @@
 {
-  "columns": ["ID", "Name", "Humidity", "Temperature", "Light", "Ran", "Time Update"],
+  "columns": ["ID", "Name", "Humidity", "Temperature", "Light", "Time Update"],
   "rows": [
-    { "ID": 1, "Name": "Device 1", "Humidity": 60, "Temperature": 22, "Light": 500, "Ran": true, "Time Update": "2023-02-20 14:30:00" },
-    { "ID": 2, "Name": "Device 2", "Humidity": 50, "Temperature": 20, "Light": 300, "Ran": false, "Time Update": "2023-02-20 14:25:00" },
-    { "ID": 3, "Name": "Device 3", "Humidity": 70, "Temperature": 25, "Light": 700, "Ran": true, "Time Update": "2023-02-20 14:35:00" },
-    { "ID": 4, "Name": "Device 4", "Humidity": 55, "Temperature": 22, "Light": 400, "Ran": false, "Time Update": "2023-02-20 14:20:00" },
-    { "ID": 5, "Name": "Device 5", "Humidity": 65, "Temperature": 24, "Light": 600, "Ran": true, "Time Update": "2023-02-20 14:40:00" },
-    { "ID": 6, "Name": "Device 6", "Humidity": 58, "Temperature": 21, "Light": 450, "Ran": false, "Time Update": "2023-02-20 14:15:00" },
-    { "ID": 7, "Name": "Device 7", "Humidity": 72, "Temperature": 26, "Light": 800, "Ran": true, "Time Update": "2023-02-20 14:45:00" },
-    { "ID": 8, "Name": "Device 8", "Humidity": 52, "Temperature": 20, "Light": 350, "Ran": false, "Time Update": "2023-02-20 14:10:00" }
+    { "ID": 1, "Name": "Device 1", "Humidity": 60, "Temperature": 22, "Light": 500, "Time Update": "2023-02-20 14:30:00" },
+    { "ID": 2, "Name": "Device 2", "Humidity": 50, "Temperature": 20, "Light": 300,  "Time Update": "2023-02-20 14:25:00" },
+    { "ID": 3, "Name": "Device 3", "Humidity": 70, "Temperature": 25, "Light": 700, "Time Update": "2023-02-20 14:35:00" },
+    { "ID": 4, "Name": "Device 4", "Humidity": 55, "Temperature": 22, "Light": 400,  "Time Update": "2023-02-20 14:20:00" },
+    { "ID": 5, "Name": "Device 5", "Humidity": 65, "Temperature": 24, "Light": 600, "Time Update": "2023-02-20 14:40:00" },
+    { "ID": 6, "Name": "Device 6", "Humidity": 58, "Temperature": 21, "Light": 450,  "Time Update": "2023-02-20 14:15:00" },
+    { "ID": 7, "Name": "Device 7", "Humidity": 72, "Temperature": 26, "Light": 800, "Time Update": "2023-02-20 14:45:00" },
+    { "ID": 8, "Name": "Device 8", "Humidity": 52, "Temperature": 20, "Light": 350,  "Time Update": "2023-02-20 14:10:00" }
   ]
 }

@@ -1,14 +1,6 @@
 {
-  "columns": ["ID", "Name", "Time", "Date Update", "Status"],
+  "columns": ["ID", "Device", "State", "Timestamp"],
   "rows": [
-    { "ID": 1, "Name": "ESP8266", "Time": "10:00 AM", "Date Update": "2022-01-01", "Status": "Active" },
-    { "ID": 2, "Name": "SP32", "Time": "11:00 AM", "Date Update": "2022-01-02", "Status": "Inactive" },
-    { "ID": 3, "Name": "LED", "Time": "12:00 PM", "Date Update": "2022-01-03", "Status": "Active" },
-    { "ID": 4, "Name": "Light Sensor", "Time": "1:00 PM", "Date Update": "2022-01-04", "Status": "Inactive" },
-    { "ID": 5, "Name": "Fan", "Time": "2:00 PM", "Date Update": "2022-01-05", "Status": "Active" },
-    { "ID": 6, "Name": "Humid Sensor", "Time": "3:00 PM", "Date Update": "2022-01-06", "Status": "Inactive" },
-    { "ID": 7, "Name": "Temp Sensor", "Time": "4:00 PM", "Date Update": "2022-01-07", "Status": "Active" },
-    { "ID": 8, "Name": "Row 4, Cell 1", "Time": "5:00 PM", "Date Update": "2022-01-08", "Status": "Inactive" },
-    { "ID": 9, "Name": "Row 4, Cell 1", "Time": "6:00 PM", "Date Update": "2022-01-09", "Status": "Active" }
+    
   ]
 }

@@ -1,16 +1,31 @@
-import React, { useState } from "react";
-import dataJson from "../data/actionHistoryData.json"; // Import JSON data
+import React, { useState, useEffect } from "react";
+import axios from "axios"; // Axios for making HTTP requests
 
 function ActionHistory() {
-  const [data, setData] = useState(dataJson.rows); // Load the rows from JSON file
-  const [columns] = useState(dataJson.columns); // Load the columns from JSON file
+  const [data, setData] = useState([]); // Initialize state for data
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [isAscending, setIsAscending] = useState(true); // State to track sorting order
+  const [loading, setLoading] = useState(true); // State for loading
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1); // State for current page
   const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
-  // const rowsPerPage = 5; // Number of rows per page
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/GetDataAction/fanlightlog");
+        setData(response.data); // Assuming the API returns an array of data
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Handle search functionality
   const handleSearch = (event) => {
@@ -26,18 +41,17 @@ function ActionHistory() {
 
     switch (sortBy) {
       case "id":
-        sortedData = [...data].sort((a, b) => a.ID - b.ID);
+        sortedData = [...data].sort((a, b) => a.id - b.id);
         break;
       case "-id":
-        sortedData = [...data].sort((a, b) => b.ID - a.ID);
+        sortedData = [...data].sort((a, b) => b.id - a.id);
         break;
-      case "name":
-        sortedData = [...data].sort((a, b) => a.Name.localeCompare(b.Name));
+      case "device":
+        sortedData = [...data].sort((a, b) => a.device.localeCompare(b.device));
         break;
-      case "-name":
-        sortedData = [...data].sort((a, b) => b.Name.localeCompare(a.Name));
+      case "-device":
+        sortedData = [...data].sort((a, b) => b.device.localeCompare(a.device));
         break;
-      // Add more cases as needed
       default:
         sortedData = data;
     }
@@ -62,6 +76,10 @@ function ActionHistory() {
 
   // Get total page count
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  if (loading) {
+    return <div>Loading...</div>; // Show a loading message while data is being fetched
+  }
 
   return (
     <main id="main" className="main">
@@ -96,9 +114,8 @@ function ActionHistory() {
           <select className="form-control" onChange={handleSort}>
             <option value="id">Sort by ID ↑</option>
             <option value="-id">Sort by ID ↓</option>
-            <option value="name">Sort by Name</option>
-            <option value="-name">Sort by Name (reverse)</option>
-            {/* Add more options as needed */}
+            <option value="device">Sort by Device</option>
+            <option value="-device">Sort by Device (reverse)</option>
           </select>
         </div>
       </div>
@@ -107,27 +124,25 @@ function ActionHistory() {
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>
-            {columns.map((colName, index) => (
-              <th key={index} scope="col">
-                {colName}
-              </th>
-            ))}
+            <th scope="col">ID</th>
+            <th scope="col">Device</th>
+            <th scope="col">State</th>
+            <th scope="col">Timestamp</th>
           </tr>
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row) => (
               <tr key={row.id}>
-                <th scope="row">{row.ID}</th>
-                <td>{row.Name}</td>
-                <td>{row.Time}</td>
-                <td>{row["Date Update"]}</td>
-                <td>{row.Status}</td>
+                <th scope="row">{row.id}</th>
+                <td>{row.device}</td>
+                <td>{row.state}</td>
+                <td>{new Date(row.timestamp).toLocaleString()}</td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={columns.length} className="text-center">
+              <td colSpan={4} className="text-center">
                 No results found
               </td>
             </tr>

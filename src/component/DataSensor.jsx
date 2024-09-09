@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import sensorData from "../data/sensorData.json"; // Import JSON data
+import axios from "axios"; // Axios for making HTTP requests
 
 function DataSensor() {
-  const [data, setData] = useState(sensorData.rows); // Load the rows from JSON file
-  const [columns] = useState(sensorData.columns); // Load the columns from JSON file
+  const [data, setData] = useState([]); // Load the rows from API
   const [searchTerm, setSearchTerm] = useState(""); // State for search term
   const [sortBy, setSortBy] = useState("id"); // State to track sorting column
   const [isAscending, setIsAscending] = useState(true); // State to track sorting order
 
   // Pagination States
   const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Number of rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(100); // Number of rows per page
   // const rowsPerPage = 5; // Number of rows per page
+
+  // Fetch data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/SensorData");
+        setData(response.data); // Assuming the API returns an array of data
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Handle search functionality
   const handleSearch = (event) => {
@@ -76,7 +90,7 @@ function DataSensor() {
     <main id="main" className="main">
       <h2 className="text-left">Data Sensor</h2>
       <div className="row mb-3 mt-3">
-      <div className="col-lg-2">
+        <div className="col-lg-2">
           <div className="form-group d-flex align-items-center">
             <label>Rows:</label>
             <input
@@ -118,36 +132,35 @@ function DataSensor() {
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>
-            {columns.map((colName, index) => (
-              <th key={index} scope="col">
-                {colName}
-              </th>
-            ))}
+            <th scope="col">ID</th>
+            <th scope="col">Temperature</th>
+            <th scope="col">Humidity</th>
+            <th scope="col">Light</th>
+            <th scope="col">Time</th>
           </tr>
         </thead>
         <tbody>
           {currentRows.length > 0 ? (
             currentRows.map((row) => (
-              <tr key={row.ID}>
-                <th scope="row">{row.ID}</th>
-                <td>{row.Name}</td>
-                <td>{row.Humidity}</td>
-                <td>{row.Temperature}</td>
-                <td>{row.Light}</td>
+              <tr key={row.id}>
+                <th scope="row">{row.id}</th>
+                <td>{row.temperature}</td>
+                <td>{row.humidity}</td>
+                <td>{row.light}</td>
+                <td>{row.createdAt}</td>
                 {/* <td>{row.Ran === true ? "Yes" : "No"}</td> */}
-                <td>{row["Time Update"]}</td>
+
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan={columns.length} className="text-center">
+              <td colSpan={5} className="text-center">
                 No results found
               </td>
             </tr>
           )}
         </tbody>
       </table>
-
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
@@ -191,7 +204,6 @@ function DataSensor() {
           </ul>
         </nav>
       )}
-
     </main>
   );
 }

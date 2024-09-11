@@ -1,24 +1,22 @@
 import React, { useState, useEffect } from "react";
-import sensorData from "../data/sensorData.json"; // Import JSON data
-import axios from "axios"; // Axios for making HTTP requests
+import axios from "axios"; 
+import { format, isMatch } from "date-fns"; // Import functions from date-fns
 
 function DataSensor() {
-  const [data, setData] = useState([]); // Load the rows from API
-  const [searchTerm, setSearchTerm] = useState(""); // State for search term
-  const [sortBy, setSortBy] = useState("id"); // State to track sorting column
-  const [isAscending, setIsAscending] = useState(true); // State to track sorting order
+  const [data, setData] = useState([]); 
+  const [searchTerm, setSearchTerm] = useState(""); 
+  const [searchCategory, setSearchCategory] = useState("temperature"); 
+  const [sortBy, setSortBy] = useState("id"); 
+  const [isAscending, setIsAscending] = useState(true); 
 
-  // Pagination States
-  const [currentPage, setCurrentPage] = useState(1); // State for current page
-  const [rowsPerPage, setRowsPerPage] = useState(100); // Number of rows per page
-  // const rowsPerPage = 5; // Number of rows per page
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [rowsPerPage, setRowsPerPage] = useState(100); 
 
-  // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:3001/SensorData");
-        setData(response.data); // Assuming the API returns an array of data
+        setData(response.data); 
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -27,64 +25,43 @@ function DataSensor() {
     fetchData();
   }, []);
 
-  // Handle search functionality
   const handleSearch = (event) => {
-    const { value } = event.target;
-    setSearchTerm(value);
-    setCurrentPage(1); // Reset to first page on search
+    setSearchTerm(event.target.value);
   };
 
-  // Handle sort functionality
+  const handleCategoryChange = (event) => {
+    setSearchCategory(event.target.value);
+  };
+
+  const filteredData = data.filter((row) => {
+    const value = row[searchCategory]; 
+    return value !== undefined && value.toString().toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
   const handleSort = (event) => {
     const sortBy = event.target.value;
-    let sortedData;
-
-    switch (sortBy) {
-      case "id":
-        sortedData = [...data].sort((a, b) => a.ID - b.ID);
-        break;
-      case "-id":
-        sortedData = [...data].sort((a, b) => b.ID - a.ID);
-        break;
-      case "Name":
-        sortedData = [...data].sort((a, b) => a.Name.localeCompare(b.Name));
-        break;
-      case "-Name":
-        sortedData = [...data].sort((a, b) => b.Name.localeCompare(a.Name));
-        break;
-      // Add more cases as needed
-      default:
-        sortedData = data;
-    }
-
-    setData(sortedData);
+    setSortBy(sortBy);
+    setIsAscending(sortBy.includes("asc"));
   };
 
-  // When dropdown changes, update the sorting state and trigger sorting
-  const handleDropdownChange = (e) => {
-    const [column, order] = e.target.value.split("-");
-    setSortBy(column);
-    setIsAscending(order === "asc");
-    handleSort(e);
+  const formatTimestamp = (timestamp) => {
+    return format(new Date(timestamp), "dd-MM-yyyy HH:mm:ss"); // Format timestamp into a more searchable form
   };
 
-  // Filtered data based on search term
-  const filteredData = data.filter((row) =>
-    Object.values(row).some((value) =>
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
-
-  // Calculate Pagination
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+  
+  const currentRows = filteredData
+    .sort((a, b) => {
+      if (sortBy === "id") return isAscending ? a.ID - b.ID : b.ID - a.ID;
+      if (sortBy === "temperature") return isAscending ? a.temperature - b.temperature : b.temperature - a.temperature;
+      return 0;
+    })
+    .slice(indexOfFirstRow, indexOfLastRow);
 
-  // Handle page change
-  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Get total page count
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <main id="main" className="main">
@@ -102,6 +79,18 @@ function DataSensor() {
             />
           </div>
         </div>
+        <div className="col-md-2">
+          <select
+            className="form-control"
+            value={searchCategory}
+            onChange={handleCategoryChange}
+          >
+            <option value="temperature">Temperature</option>
+            <option value="humidity">Humidity</option>
+            <option value="light">Light</option>
+            <option value="createdAt">Time</option>
+          </select>
+        </div>
         <div className="col-lg-8">
           <input
             type="text"
@@ -112,23 +101,8 @@ function DataSensor() {
             style={{ width: "100%" }}
           />
         </div>
-        <div className="col-lg-2">
-          <select
-            className="form-control"
-            onChange={handleSort}
-            style={{ width: "100%" }}
-          >
-            <option value="id">Sort by ID ↑</option>
-            <option value="-id">Sort by ID ↓</option>
-            <option value="Name">Sort by Name</option>
-            <option value="-Name">Sort by Name (reverse)</option>
-            {/* Add more options for other columns if needed */}
-          </select>
-        </div>
       </div>
-      {/* Search Bar and Sort Dropdown */}
 
-      {/* Table */}
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>
@@ -147,9 +121,7 @@ function DataSensor() {
                 <td>{row.temperature}</td>
                 <td>{row.humidity}</td>
                 <td>{row.light}</td>
-                <td>{row.createdAt}</td>
-                {/* <td>{row.Ran === true ? "Yes" : "No"}</td> */}
-
+                <td>{formatTimestamp(row.createdAt)}</td>
               </tr>
             ))
           ) : (
@@ -162,7 +134,6 @@ function DataSensor() {
         </tbody>
       </table>
 
-      {/* Pagination Controls */}
       {totalPages > 1 && (
         <nav>
           <ul className="pagination justify-content-center">

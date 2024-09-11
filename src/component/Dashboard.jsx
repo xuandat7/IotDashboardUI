@@ -3,33 +3,54 @@ import Charts from "./Charts";
 import "./Dashboard.css";
 
 function Dashboard() {
-  const [temperature, setTemperature] = useState(42);
-  const [humidity, setHumidity] = useState(40);
-  const [brightness, setBrightness] = useState(10);
+  const [temperature, setTemperature] = useState(0);
+  const [humidity, setHumidity] = useState(0);
+  const [brightness, setBrightness] = useState(0);
 
-  const fetchData = () => {
-    // Simulate fetching new data
-    const newTemperature = Math.floor(Math.random() * 10) + 20;
-    const newHumidity = Math.floor(Math.random() * 20) + 30;
-    const newBrightness = Math.floor(Math.random() * 100) + 100;
-
-    return {
-      temperature: newTemperature,
-      humidity: newHumidity,
-      brightness: newBrightness,
-    };
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/SensorData", {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+  
+      // Check if the data is an array and has at least one element
+      if (Array.isArray(data) && data.length > 0) {
+        const latestData = data[data.length - 1];  // Get the latest data point
+  
+        if (latestData.temperature && latestData.humidity && latestData.light) {
+          setTemperature(latestData.temperature);
+          setHumidity(latestData.humidity);
+          setBrightness(latestData.light);
+        } else {
+          console.error("Unexpected data format in latest entry:", latestData);
+        }
+      } else {
+        console.error("Unexpected data format:", data);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
   };
+  
 
   useEffect(() => {
     const updateData = () => {
-      const newData = fetchData();
-      setTemperature(newData.temperature);
-      setHumidity(newData.humidity);
-      setBrightness(newData.brightness);
+      fetchData();
     };
 
+    // Fetch data initially and set an interval for updates
+    updateData();
     const intervalId = setInterval(updateData, 5000);
 
+    // Cleanup on component unmount
     return () => clearInterval(intervalId);
   }, []);
 
@@ -46,14 +67,35 @@ function Dashboard() {
   };
 
   const getLightGradient = (lux) => {
-    if (lux > 100) return "linear-gradient(to right, #f7971e, #ffd200)";
-    if (lux < 40) return "linear-gradient(to right, #a1c4fd, #c2e9fb)";
-    return "linear-gradient(to right, #fdfbfb, #ebedee)";
+    if (lux >= 1000) {
+      // Very bright, like direct sunlight
+      return "linear-gradient(to right, #ff7300, #ff0000)";
+    } else if (lux >= 700) {
+      // Bright, indoor sunlight or overcast outdoor
+      return "linear-gradient(to right, #f7971e, #ffd200)";
+    } else if (lux >= 400) {
+      // Moderate, typical indoor lighting
+      return "linear-gradient(to right, #ffefba, #ffffff)";
+    } else if (lux >= 200) {
+      // Dim, typical dusk or indoor low lighting
+      return "linear-gradient(to right, #a1c4fd, #c2e9fb)";
+    } else if (lux >= 100) {
+      // Very dim, early evening or cloudy conditions
+      return "linear-gradient(to right, #89f7fe, #66a6ff)";
+    } else if (lux >= 40) {
+      // Twilight or very low artificial lighting
+      return "linear-gradient(to right, #374785, #8a9eaf)";
+    } else {
+      // Extremely dark, like nighttime
+      return "linear-gradient(to right, #2b5876, #4e4376)";
+    }
   };
+  
 
   return (
     <div className="dashboard">
       <div className="row">
+        {/* Temperature Card */}
         <div className="col-lg-4">
           <div
             className="card"
@@ -76,7 +118,6 @@ function Dashboard() {
                       ? "Low"
                       : "Normal"}
                   </small>
-                  
                 </div>
               </div>
             </div>
@@ -101,7 +142,6 @@ function Dashboard() {
                   <small className="text-muted">
                     {humidity > 70 ? "High" : humidity < 30 ? "Low" : "Normal"}
                   </small>
-                  
                 </div>
               </div>
             </div>
@@ -132,7 +172,6 @@ function Dashboard() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

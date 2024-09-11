@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
-import combinedData from "../data/combinedData.json";
 import "./Charts.css";
 
 function Charts() {
@@ -8,18 +7,59 @@ function Charts() {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
 
-  const fetchData = () => {
-    // Simulate fetching new data
-    const newTemperature = Math.floor(Math.random() * 10) + 20;
-    const newHumidity = Math.floor(Math.random() * 20) + 30;
-    const newBrightness = Math.floor(Math.random() * 100) + 100;
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [
+      {
+        label: "Temperature (°C)",
+        data: [],
+        borderColor: "rgba(255, 99, 132, 1)",
+        backgroundColor: "rgba(255, 99, 132, 0.2)",
+        fill: true,
+      },
+      {
+        label: "Humidity (%)",
+        data: [],
+        borderColor: "rgba(54, 162, 235, 1)",
+        backgroundColor: "rgba(54, 162, 235, 0.2)",
+        fill: true,
+      },
+      {
+        label: "Brightness (lux)",
+        data: [],
+        borderColor: "rgba(255, 206, 86, 1)",
+        backgroundColor: "rgba(255, 206, 86, 0.2)",
+        fill: true,
+      },
+    ],
+  });
 
-    return {
-      temperature: newTemperature,
-      humidity: newHumidity,
-      brightness: newBrightness,
-      time: new Date().toLocaleTimeString()
-    };
+  // Fetch data from the API
+  const fetchData = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/SensorData", {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const latestData = Array.isArray(data) ? data[data.length - 1] : data;
+
+      return {
+        temperature: latestData.temperature,
+        humidity: latestData.humidity,
+        brightness: latestData.light,
+        time: new Date(latestData.createdAt).toLocaleTimeString(),
+      };
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return null;
+    }
   };
 
   useEffect(() => {
@@ -31,10 +71,7 @@ function Charts() {
 
     chartInstanceRef.current = new Chart(ctx, {
       type: "line",
-      data: {
-        labels: combinedData.labels,
-        datasets: combinedData.datasets
-      },
+      data: chartData,
       options: {
         title: {
           display: true,
@@ -58,32 +95,44 @@ function Charts() {
       },
     });
 
-    const updateChart = () => {
-      const newData = fetchData();
+    const updateChart = async () => {
+      const newData = await fetchData();
 
-      // Update data arrays
-      combinedData.labels.push(newData.time);
-      combinedData.datasets[0].data.push(newData.temperature);
-      combinedData.datasets[1].data.push(newData.humidity);
-      combinedData.datasets[2].data.push(newData.brightness);
+      if (newData) {
+        setChartData((prevData) => {
+          const updatedLabels = [...prevData.labels, newData.time];
+          const updatedTempData = [...prevData.datasets[0].data, newData.temperature];
+          const updatedHumidityData = [...prevData.datasets[1].data, newData.humidity];
+          const updatedBrightnessData = [...prevData.datasets[2].data, newData.brightness];
 
-      // Keep only the last 15 data points
-      if (combinedData.labels.length > 10) {
-        combinedData.labels.shift();
-        combinedData.datasets[0].data.shift();
-        combinedData.datasets[1].data.shift();
-        combinedData.datasets[2].data.shift();
+          // Keep only the last 10 data points
+          if (updatedLabels.length > 10) {
+            updatedLabels.shift();
+            updatedTempData.shift();
+            updatedHumidityData.shift();
+            updatedBrightnessData.shift();
+          }
+
+          return {
+            labels: updatedLabels,
+            datasets: [
+              { ...prevData.datasets[0], data: updatedTempData },
+              { ...prevData.datasets[1], data: updatedHumidityData },
+              { ...prevData.datasets[2], data: updatedBrightnessData },
+            ],
+          };
+        });
+
+        // Update chart data and re-render the chart
+        chartInstanceRef.current.data.labels = chartData.labels;
+        chartInstanceRef.current.data.datasets.forEach((dataset, index) => {
+          dataset.data = chartData.datasets[index].data;
+        });
+        chartInstanceRef.current.update();
       }
-
-      // Update chart
-      chartInstanceRef.current.data.labels = combinedData.labels;
-      chartInstanceRef.current.data.datasets.forEach((dataset, index) => {
-        dataset.data = combinedData.datasets[index].data;
-      });
-      chartInstanceRef.current.update();
     };
 
-    const intervalId = setInterval(updateChart, 5000);
+    const intervalId = setInterval(updateChart, 5000); // Fetch data every 5 seconds
 
     return () => {
       clearInterval(intervalId);
@@ -91,7 +140,7 @@ function Charts() {
         chartInstanceRef.current.destroy();
       }
     };
-  }, []);
+  }, [chartData]);
 
   return (
     <section className="charts section">

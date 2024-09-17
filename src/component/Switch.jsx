@@ -1,40 +1,84 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Switch.css";
 import Toggle from "react-bootstrap-toggle";
 import "react-bootstrap-toggle/dist/bootstrap2-toggle.css";
 import axios from "axios";
 
 function Switch() {
-  const [TempChecked, TempSetChecked] = useState(false);
-  const [FanChecked, FanSetChecked] = useState(false);
-  const [LightChecked, LightSetChecked] = useState(false);
+  const [TempChecked, TempSetChecked] = useState(false); // Temperature state
+  const [FanChecked, FanSetChecked] = useState(false); // Fan state
+  const [LightChecked, LightSetChecked] = useState(false); // Light state
+  const [FanConnected, setFanConnected] = useState(true); // Fan connection status
+  const [LightConnected, setLightConnected] = useState(true); // Light connection status
+  const [isConnected, setIsConnected] = useState(true); // Overall connection status
 
-  // Hàm bật tắt quạt
+  // Fetch the initial states from the API
+  useEffect(() => {
+    const fetchDeviceStatus = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/deviceStatus/device-status");
+        const { led, fan } = response.data;
+
+        // Set states based on API response
+        LightSetChecked(led.state === "on");
+        FanSetChecked(fan.state === "on");
+        setLightConnected(led.connected);
+        setFanConnected(fan.connected);
+
+      } catch (error) {
+        console.error("Error fetching device status:", error);
+        setIsConnected(false);
+      }
+    };
+
+    const fetchConnection = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/esp8266/status");
+        console.log(response.data.status);
+        if(response.data.status === "connected") {
+          setIsConnected(true);
+        } else {
+          setIsConnected(false);
+        }
+          console.log(setIsConnected);
+      } catch (error) {
+        console.error("Error fetching connection status:", error);
+        setIsConnected(false);
+      }
+    };
+
+    fetchConnection();
+    fetchDeviceStatus();
+  }, []);
+
+  // Toggle fan state
   const toggleFan = async () => {
+    if (!FanConnected || !isConnected) return;
+
     const newFanState = !FanChecked;
     FanSetChecked(newFanState);
+    localStorage.setItem("FanChecked", JSON.stringify(newFanState));
 
-    // Gọi API tương ứng để bật/tắt quạt
     const apiFanUrl = `http://localhost:3001/devices/fan/${newFanState ? "on" : "off"}`;
-    
     try {
-      await axios.post(apiFanUrl);  // Gửi lệnh đến server
+      await axios.post(apiFanUrl);
       console.log(`Fan turned ${newFanState ? "on" : "off"}`);
     } catch (error) {
       console.error("Error toggling fan:", error);
     }
   };
 
-  // Hàm bật tắt đèn
+  // Toggle light state
   const toggleLight = async () => {
+    if (!LightConnected || !isConnected) return;
+
     const newLightState = !LightChecked;
     LightSetChecked(newLightState);
+    localStorage.setItem("LightChecked", JSON.stringify(newLightState));
 
-    // Gọi API tương ứng để bật/tắt đèn
     const apiLedUrl = `http://localhost:3001/devices/led/${newLightState ? "on" : "off"}`;
-    
     try {
-      await axios.post(apiLedUrl);  // Gửi lệnh đến server
+      await axios.post(apiLedUrl);
       console.log(`Light turned ${newLightState ? "on" : "off"}`);
     } catch (error) {
       console.error("Error toggling light:", error);
@@ -61,6 +105,7 @@ function Switch() {
               active={TempChecked}
               onstyle="success"
               offstyle="secondary"
+              disabled={!isConnected} // Disable toggle if not connected
             />
           </div>
 
@@ -73,13 +118,14 @@ function Switch() {
             ></i>
             <Toggle
               className="toggle mx-2"
-              onClick={toggleFan}  // Gọi hàm toggleFan khi nhấn nút
+              onClick={toggleFan}
               on={<h5>On</h5>}
               off={<h5>Off</h5>}
               size="lg"
               active={FanChecked}
               onstyle="success"
               offstyle="secondary"
+              disabled={!FanConnected || !isConnected} // Disable toggle if not connected
             />
           </div>
 
@@ -92,15 +138,21 @@ function Switch() {
             ></i>
             <Toggle
               className="toggle mx-2"
-              onClick={toggleLight}  // Gọi hàm toggleLight khi nhấn nút
+              onClick={toggleLight}
               on={<h5>On</h5>}
               off={<h5>Off</h5>}
               size="lg"
               active={LightChecked}
               onstyle="success"
               offstyle="secondary"
+              disabled={!LightConnected || !isConnected} // Disable toggle if not connected
             />
           </div>
+
+          {/* Optional error message */}
+          {(!isConnected || !FanConnected || !LightConnected) && (
+            <p className="error-message">One or more devices are not connected. Please check your connection.</p>
+          )}
         </div>
       </div>
     </section>

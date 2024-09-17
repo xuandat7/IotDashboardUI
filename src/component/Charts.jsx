@@ -48,13 +48,13 @@ function Charts() {
       }
 
       const data = await response.json();
-      const latestData = Array.isArray(data) ? data[data.length - 1] : data;
+      const latestData = Array.isArray(data.rows) ? data.rows[data.rows.length - 1] : data;
 
       return {
         temperature: latestData.temperature,
         humidity: latestData.humidity,
         brightness: latestData.light,
-        time: new Date(latestData.createdAt).toLocaleTimeString(),
+        time: new Date(latestData.createdAt).toLocaleTimeString(), // Get the time from latest data
       };
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -73,9 +73,13 @@ function Charts() {
       type: "line",
       data: chartData,
       options: {
-        title: {
-          display: true,
-          text: "Temperature, Humidity, and Brightness Chart",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: "Temperature, Humidity, and Brightness Chart",
+          },
         },
         scales: {
           y: {
@@ -105,7 +109,7 @@ function Charts() {
           const updatedHumidityData = [...prevData.datasets[1].data, newData.humidity];
           const updatedBrightnessData = [...prevData.datasets[2].data, newData.brightness];
 
-          // Keep only the last 10 data points
+          // Giới hạn chỉ hiển thị 10 điểm dữ liệu gần nhất
           if (updatedLabels.length > 10) {
             updatedLabels.shift();
             updatedTempData.shift();
@@ -122,17 +126,10 @@ function Charts() {
             ],
           };
         });
-
-        // Update chart data and re-render the chart
-        chartInstanceRef.current.data.labels = chartData.labels;
-        chartInstanceRef.current.data.datasets.forEach((dataset, index) => {
-          dataset.data = chartData.datasets[index].data;
-        });
-        chartInstanceRef.current.update();
       }
     };
 
-    const intervalId = setInterval(updateChart, 5000); // Fetch data every 5 seconds
+    const intervalId = setInterval(updateChart, 5000); // Cập nhật dữ liệu mỗi 5 giây
 
     return () => {
       clearInterval(intervalId);

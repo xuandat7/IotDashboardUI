@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa"; // Sorting icons
 
 function DataSensor() {
   const [data, setData] = useState({ rows: [], count: 0, page: 1, limit: 20 });
@@ -35,6 +36,35 @@ function DataSensor() {
     setSearchCategory(event.target.value);
   };
 
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setIsAscending(!isAscending); // Toggle sorting order
+    } else {
+      setSortBy(column);
+      setIsAscending(true); // Default to ascending when switching columns
+    }
+  };
+
+  const renderSortIcon = (column) => {
+    if (sortBy === column) {
+      return isAscending ? <FaSortUp /> : <FaSortDown />;
+    } else {
+      return <FaSort />;
+    }
+  };
+
+  const sortData = (rows) => {
+    return rows.sort((a, b) => {
+      if (a[sortBy] < b[sortBy]) return isAscending ? -1 : 1;
+      if (a[sortBy] > b[sortBy]) return isAscending ? 1 : -1;
+      return 0;
+    });
+  };
+
+  const formatTimestamp = (timestamp) => {
+    return format(new Date(timestamp), "dd-MM-yyyy HH:mm:ss");
+  };
+
   const filteredData = data.rows.filter((row) => {
     const value = row[searchCategory];
     return (
@@ -43,15 +73,7 @@ function DataSensor() {
     );
   });
 
-  const handleSort = (event) => {
-    const sortBy = event.target.value;
-    setSortBy(sortBy);
-    setIsAscending(sortBy.includes("asc"));
-  };
-
-  const formatTimestamp = (timestamp) => {
-    return format(new Date(timestamp), "dd-MM-yyyy HH:mm:ss");
-  };
+  const sortedData = sortData(filteredData); // Sort the data before rendering
 
   const totalPages = Math.ceil(data.count / rowsPerPage);
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
@@ -61,7 +83,6 @@ function DataSensor() {
     const maxPagesToShow = 3;
 
     if (totalPages <= 7) {
-      // Nếu tổng số trang ít hơn 7, hiển thị tất cả các trang
       for (let i = 1; i <= totalPages; i++) {
         pagination.push(
           <li
@@ -75,8 +96,6 @@ function DataSensor() {
         );
       }
     } else {
-      // Nếu tổng số trang nhiều hơn 7, hiển thị dấu "..." và chỉ các trang cần thiết
-      // Trang đầu
       pagination.push(
         <li
           key={1}
@@ -88,7 +107,6 @@ function DataSensor() {
         </li>
       );
 
-      // Hiển thị dấu "..." nếu trang hiện tại > 4
       if (currentPage > maxPagesToShow + 1) {
         pagination.push(
           <li key="ellipsis-start" className="page-item disabled">
@@ -97,7 +115,6 @@ function DataSensor() {
         );
       }
 
-      // Các trang ở giữa (3 trang trước và 3 trang kế tiếp)
       const startPage = Math.max(2, currentPage - 1);
       const endPage = Math.min(totalPages - 1, currentPage + 1);
 
@@ -114,7 +131,6 @@ function DataSensor() {
         );
       }
 
-      // Hiển thị dấu "..." nếu trang hiện tại chưa gần cuối
       if (currentPage < totalPages - maxPagesToShow) {
         pagination.push(
           <li key="ellipsis-end" className="page-item disabled">
@@ -123,7 +139,6 @@ function DataSensor() {
         );
       }
 
-      // Trang cuối
       pagination.push(
         <li
           key={totalPages}
@@ -173,16 +188,26 @@ function DataSensor() {
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Temperature</th>
-            <th scope="col">Humidity</th>
-            <th scope="col">Light</th>
-            <th scope="col">Time</th>
+            <th scope="col" onClick={() => handleSort("id")}>
+              ID {renderSortIcon("id")}
+            </th>
+            <th scope="col" onClick={() => handleSort("temperature")}>
+              Temperature {renderSortIcon("temperature")}
+            </th>
+            <th scope="col" onClick={() => handleSort("humidity")}>
+              Humidity {renderSortIcon("humidity")}
+            </th>
+            <th scope="col" onClick={() => handleSort("light")}>
+              Light {renderSortIcon("light")}
+            </th>
+            <th scope="col" onClick={() => handleSort("createdAt")}>
+              Time {renderSortIcon("createdAt")}
+            </th>
           </tr>
         </thead>
         <tbody>
-          {filteredData.length > 0 ? (
-            filteredData.map((row) => (
+          {sortedData.length > 0 ? (
+            sortedData.map((row) => (
               <tr key={row.id}>
                 <th scope="row">{row.id}</th>
                 <td>{row.temperature}</td>
@@ -206,7 +231,7 @@ function DataSensor() {
           <div className="row">
             <div className="col-lg-2">
               <div className="form-group d-flex align-items-center">
-                <label>Rows:</label>
+                <label>Limit:</label>
                 <input
                   type="number"
                   className="form-control mx-2 "

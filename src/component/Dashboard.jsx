@@ -14,18 +14,22 @@ function Dashboard() {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const data = await response.json();
-  
+
       // Check if the data is an array and has at least one element
-      if (Array.isArray(data) && data.length > 0) {
-        const latestData = data[data.length - 1];  // Get the latest data point
-  
-        if (latestData.temperature && latestData.humidity && latestData.light) {
+      if (Array.isArray(data.rows) && data.rows.length > 0) {
+        const latestData = data.rows[data.rows.length - 1];  // Get the latest data point
+
+        // Log the latestData object to understand its structure
+        console.log("Latest data:", latestData);
+
+        // Check if latestData has the expected properties
+        if (latestData && latestData.temperature !== undefined && latestData.humidity !== undefined && latestData.light !== undefined) {
           setTemperature(latestData.temperature);
           setHumidity(latestData.humidity);
           setBrightness(latestData.light);

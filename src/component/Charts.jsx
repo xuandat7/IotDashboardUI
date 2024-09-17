@@ -37,7 +37,7 @@ function Charts() {
   // Fetch data from the API
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/SensorData", {
+      const response = await fetch("http://localhost:3001/SensorData/allData", {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -48,7 +48,7 @@ function Charts() {
       }
 
       const data = await response.json();
-      const latestData = Array.isArray(data.rows) ? data.rows[data.rows.length - 1] : data;
+      const latestData = Array.isArray(data) ? data[data.length - 1] : data;
 
       return {
         temperature: latestData.temperature,

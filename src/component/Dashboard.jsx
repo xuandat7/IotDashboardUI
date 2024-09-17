@@ -9,7 +9,7 @@ function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/SensorData", {
+      const response = await fetch("http://localhost:3001/SensorData/allData", {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -20,10 +20,11 @@ function Dashboard() {
       }
 
       const data = await response.json();
+      console.log(data)
 
       // Check if the data is an array and has at least one element
-      if (Array.isArray(data.rows) && data.rows.length > 0) {
-        const latestData = data.rows[data.rows.length - 1];  // Get the latest data point
+      if (Array.isArray(data) && data.length > 0) {
+        const latestData = data[data.length - 1];  // Get the latest data point
 
         // Log the latestData object to understand its structure
         console.log("Latest data:", latestData);

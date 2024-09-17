@@ -10,6 +10,7 @@ function Switch() {
   const [LightChecked, LightSetChecked] = useState(false); // Light state
   const [FanConnected, setFanConnected] = useState(true); // Fan connection status
   const [LightConnected, setLightConnected] = useState(true); // Light connection status
+  const [TempConnected, setTempConnected] = useState(true); // Temperature connection status
   const [isConnected, setIsConnected] = useState(true); // Overall connection status
 
   // Fetch the initial states from the API
@@ -17,13 +18,16 @@ function Switch() {
     const fetchDeviceStatus = async () => {
       try {
         const response = await axios.get("http://localhost:3001/deviceStatus/device-status");
-        const { led, fan } = response.data;
+        const { led, fan, tem } = response.data;
 
         // Set states based on API response
         LightSetChecked(led.state === "on");
         FanSetChecked(fan.state === "on");
+        TempSetChecked(tem.state === "on");
+
         setLightConnected(led.connected);
         setFanConnected(fan.connected);
+        setTempConnected(tem.connected);
 
       } catch (error) {
         console.error("Error fetching device status:", error);
@@ -34,13 +38,11 @@ function Switch() {
     const fetchConnection = async () => {
       try {
         const response = await axios.get("http://localhost:3001/esp8266/status");
-        console.log(response.data.status);
         if(response.data.status === "connected") {
           setIsConnected(true);
         } else {
           setIsConnected(false);
         }
-          console.log(setIsConnected);
       } catch (error) {
         console.error("Error fetching connection status:", error);
         setIsConnected(false);
@@ -85,6 +87,23 @@ function Switch() {
     }
   };
 
+  // Toggle temperature state
+  const toggleTemperature = async () => {
+    if (!TempConnected || !isConnected) return;
+
+    const newTempState = !TempChecked;
+    TempSetChecked(newTempState);
+    localStorage.setItem("TempChecked", JSON.stringify(newTempState));
+
+    const apiTempUrl = `http://localhost:3001/devices/tem/${newTempState ? "on" : "off"}`;
+    try {
+      await axios.post(apiTempUrl);
+      console.log(`Temperature turned ${newTempState ? "on" : "off"}`);
+    } catch (error) {
+      console.error("Error toggling temperature:", error);
+    }
+  };
+
   return (
     <section className="switch section">
       <div className="row">
@@ -98,14 +117,14 @@ function Switch() {
             ></i>
             <Toggle
               className="toggle mx-2 toggle-handle"
-              onClick={() => TempSetChecked(!TempChecked)}
+              onClick={toggleTemperature}
               on={<h5>On</h5>}
               off={<h5>Off</h5>}
               size="lg"
               active={TempChecked}
               onstyle="success"
               offstyle="secondary"
-              disabled={!isConnected} // Disable toggle if not connected
+              disabled={!TempConnected || !isConnected} // Disable toggle if not connected
             />
           </div>
 
@@ -150,7 +169,7 @@ function Switch() {
           </div>
 
           {/* Optional error message */}
-          {(!isConnected || !FanConnected || !LightConnected) && (
+          {(!isConnected || !FanConnected || !LightConnected || !TempConnected) && (
             <p className="error-message">One or more devices are not connected. Please check your connection.</p>
           )}
         </div>

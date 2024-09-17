@@ -4,22 +4,33 @@ import { format } from "date-fns";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa"; // Sorting icons
 
 function DataSensor() {
-  const [data, setData] = useState({ rows: [], count: 0, page: 1, limit: 20 });
+  const [data, setData] = useState({ rows: [], count: 0 });
+  const [allData, setAllData] = useState([]); // State to hold all data for searching
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchCategory, setSearchCategory] = useState("temperature");
+  const [searchCategory, setSearchCategory] = useState("all");
   const [sortBy, setSortBy] = useState("id");
   const [isAscending, setIsAscending] = useState(true);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(20);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/SensorData", {
-          params: { page: currentPage, limit: rowsPerPage },
+        // Fetch paginated data
+        const response = await axios.get(
+          "http://localhost:3001/SensorData/allData",
+          {
+            params: { page: currentPage, limit: rowsPerPage },
+          }
+        );
+        setData({
+          rows: response.data.rows,
+          count: response.data.count,
         });
-        setData(response.data);
+
+        // Fetch all data for searching
+        const allResponse = await axios.get("http://localhost:3001/SensorData/allData");
+        setAllData(allResponse.data || []); // Ensure allData is always an array
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -28,12 +39,24 @@ function DataSensor() {
     fetchData();
   }, [currentPage, rowsPerPage]);
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+  const handleSearch = async (event) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+    setCurrentPage(1); // Reset to the first page on search
+
+    try {
+      const response = await axios.get("http://localhost:3001/SensorData/allData", {
+        params: { search: term },
+      });
+      setAllData(response.data || []); // Ensure allData is always an array
+    } catch (error) {
+      console.error("Error fetching search data:", error);
+    }
   };
 
   const handleCategoryChange = (event) => {
     setSearchCategory(event.target.value);
+    setSearchTerm(""); // Clear search term when category changes
   };
 
   const handleSort = (column) => {
@@ -65,18 +88,45 @@ function DataSensor() {
     return format(new Date(timestamp), "dd-MM-yyyy HH:mm:ss");
   };
 
-  const filteredData = data.rows.filter((row) => {
-    const value = row[searchCategory];
-    return (
-      value !== undefined &&
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  // Ensure allData is an array before calling filter
+  // Filter data based on search term and category
+  const filteredData = allData.filter((row) => {
+    if (searchTerm === "") return true; // No filtering if no search term
+  
+    if (searchCategory === "all") {
+      // Search across all relevant fields (temperature, humidity, light, and createdAt)
+      return (
+        row.temperature?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.humidity?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.light?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
+        formatTimestamp(row.createdAt).includes(searchTerm)
+      );
+    } else if (searchCategory === "createdAt") {
+      const formattedTimestamp = formatTimestamp(row.createdAt);
+      return formattedTimestamp.includes(searchTerm);
+    } else {
+      return row[searchCategory]
+        ?.toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+    }
   });
+  
 
-  const sortedData = sortData(filteredData); // Sort the data before rendering
+  const sortedData = sortData(filteredData); // Sort the data before paginating
 
-  const totalPages = Math.ceil(data.count / rowsPerPage);
-  const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  const paginatedData = sortedData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
 
   const renderPagination = () => {
     const pagination = [];
@@ -171,13 +221,14 @@ function DataSensor() {
             <option value="humidity">Humidity</option>
             <option value="light">Light</option>
             <option value="createdAt">Time</option>
+            <option value="all">All</option> {/* Added "All" option */}
           </select>
         </div>
         <div className="col-lg-8">
           <input
             type="text"
             className="form-control"
-            placeholder="Search..."
+            placeholder={`Search by ${searchCategory}...`}
             value={searchTerm}
             onChange={handleSearch}
             style={{ width: "100%" }}
@@ -206,8 +257,8 @@ function DataSensor() {
           </tr>
         </thead>
         <tbody>
-          {sortedData.length > 0 ? (
-            sortedData.map((row) => (
+          {paginatedData.length > 0 ? (
+            paginatedData.map((row) => (
               <tr key={row.id}>
                 <th scope="row">{row.id}</th>
                 <td>{row.temperature}</td>
@@ -234,7 +285,7 @@ function DataSensor() {
                 <label>Limit:</label>
                 <input
                   type="number"
-                  className="form-control mx-2 "
+                  className="form-control mx-2"
                   value={rowsPerPage}
                   onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
                   min="1"

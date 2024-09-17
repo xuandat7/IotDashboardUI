@@ -1,53 +1,79 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
+import { FaSort, FaSearch } from "react-icons/fa"; // Import icons
 
 function ActionHistory() {
-  const [data, setData] = useState({ rows: [], count: 0, page: 1, limit: 10 });
+  const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchCategory, setSearchCategory] = useState("device");
+  const [searchCategory, setSearchCategory] = useState("all");
   const [loading, setLoading] = useState(true);
-
+  const [sortField, setSortField] = useState(""); // For sorting field
+  const [sortOrder, setSortOrder] = useState("asc"); // For sorting order (asc/desc)
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          "http://localhost:3001/GetDataAction/fanlightlog",
-          {
-            params: { page: currentPage, limit: rowsPerPage },
-          }
-        );
-        setData(response.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
+  // Function to fetch data
+  const fetchData = async (page = 1, limit = 10) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/GetDataAction/allData`
+      );
+      console.log(response.data);
+      setData(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
+  useEffect(() => {
+    // Fetch initial data
+    fetchData(currentPage, rowsPerPage);
   }, [currentPage, rowsPerPage]);
 
+  // Handle search input change
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page on search
   };
 
+  // Handle search category change
   const handleCategoryChange = (event) => {
     setSearchCategory(event.target.value);
-    setSearchTerm("");
+    setSearchTerm(""); // Clear search term when category changes
+    setCurrentPage(1); // Reset to first page on category change
   };
 
+  // Handle sorting
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
+  // Format timestamp
   const formatTimestamp = (timestamp) => {
     return format(new Date(timestamp), "dd-MM-yyyy HH:mm:ss");
   };
 
-  const filteredData = data.rows.filter((row) => {
-    if (searchCategory === "timestamp") {
+  // Filter data based on search term and category
+  const filteredData = data.filter((row) => {
+    if (searchTerm === "") return true; // No filtering if no search term
+
+    if (searchCategory === "all") {
+      // Search all fields
+      return (
+        row.device.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        formatTimestamp(row.timestamp).includes(searchTerm)
+      );
+    } else if (searchCategory === "timestamp") {
       const formattedTimestamp = formatTimestamp(row.timestamp);
       return formattedTimestamp.includes(searchTerm);
     } else {
@@ -58,70 +84,53 @@ function ActionHistory() {
     }
   });
 
-  const totalPages = Math.ceil(data.count / rowsPerPage);
+  // Apply sorting
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (!sortField) return 0;
+    const aValue = a[sortField];
+    const bValue = b[sortField];
+    if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
 
+  // Apply pagination to sorted and filtered data
+  const paginatedData = sortedData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  // Calculate total pages
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  // Render pagination
   const renderPagination = () => {
     const pagination = [];
     const maxPagesToShow = 3;
 
-    // Always show first page
-    pagination.push(
-      <li
-        key={1}
-        className={`page-item ${currentPage === 1 ? "active" : ""}`}
-      >
-        <button className="page-link" onClick={() => setCurrentPage(1)}>
-          1
-        </button>
-      </li>
-    );
-
-    // Show ellipsis if needed before the current pages
-    if (currentPage > maxPagesToShow + 1) {
-      pagination.push(
-        <li key="ellipsis-start" className="page-item disabled">
-          <span className="page-link">...</span>
-        </li>
-      );
+    for (let i = 1; i <= totalPages; i++) {
+      if (i <= maxPagesToShow || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+        pagination.push(
+          <li
+            key={i}
+            className={`page-item ${currentPage === i ? "active" : ""}`}
+          >
+            <button
+              className="page-link"
+              onClick={() => setCurrentPage(i)}
+            >
+              {i}
+            </button>
+          </li>
+        );
+      } else if (i === maxPagesToShow + 1 || i === totalPages - 1) {
+        pagination.push(
+          <li key={i} className="page-item disabled">
+            <span className="page-link">...</span>
+          </li>
+        );
+      }
     }
-
-    // Pages around current page
-    const startPage = Math.max(2, currentPage - 1);
-    const endPage = Math.min(totalPages - 1, currentPage + 1);
-
-    for (let i = startPage; i <= endPage; i++) {
-      pagination.push(
-        <li
-          key={i}
-          className={`page-item ${currentPage === i ? "active" : ""}`}
-        >
-          <button className="page-link" onClick={() => setCurrentPage(i)}>
-            {i}
-          </button>
-        </li>
-      );
-    }
-
-    // Show ellipsis if needed before the last page
-    if (currentPage < totalPages - maxPagesToShow) {
-      pagination.push(
-        <li key="ellipsis-end" className="page-item disabled">
-          <span className="page-link">...</span>
-        </li>
-      );
-    }
-
-    // Always show last page
-    pagination.push(
-      <li
-        key={totalPages}
-        className={`page-item ${currentPage === totalPages ? "active" : ""}`}
-      >
-        <button className="page-link" onClick={() => setCurrentPage(totalPages)}>
-          {totalPages}
-        </button>
-      </li>
-    );
 
     return pagination;
   };
@@ -144,33 +153,66 @@ function ActionHistory() {
             <option value="device">Device</option>
             <option value="state">State</option>
             <option value="timestamp">Timestamp</option>
+            <option value="all">All</option> {/* Added "All" option */}
           </select>
         </div>
 
-        <div className="col-md-4">
-          <input
-            type="text"
-            className="form-control"
-            placeholder={`Search by ${searchCategory}...`}
-            value={searchTerm}
-            onChange={handleSearch}
-            style={{ width: "100%" }}
-          />
+        <div className="col-md-6">
+          <div className="input-group">
+            <input
+              type="text"
+              className="form-control"
+              placeholder={`Search by ${searchCategory}...`}
+              value={searchTerm}
+              onChange={handleSearch}
+              style={{ width: "100%" }}
+            />
+            
+          </div>
         </div>
       </div>
 
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Device</th>
-            <th scope="col">State</th>
-            <th scope="col">Timestamp</th>
+            <th scope="col">
+              ID
+              <button onClick={() => handleSort("id")} className="btn btn-link">
+                <FaSort />
+              </button>
+            </th>
+            <th scope="col">
+              Device
+              <button
+                onClick={() => handleSort("device")}
+                className="btn btn-link"
+              >
+                <FaSort />
+              </button>
+            </th>
+            <th scope="col">
+              State
+              <button
+                onClick={() => handleSort("state")}
+                className="btn btn-link"
+              >
+                <FaSort />
+              </button>
+            </th>
+            <th scope="col">
+              Timestamp
+              <button
+                onClick={() => handleSort("timestamp")}
+                className="btn btn-link"
+              >
+                <FaSort />
+              </button>
+            </th>
           </tr>
         </thead>
         <tbody>
-          {filteredData.length > 0 ? (
-            filteredData.map((row) => (
+          {paginatedData.length > 0 ? (
+            paginatedData.map((row) => (
               <tr key={row.id}>
                 <th scope="row">{row.id}</th>
                 <td>{row.device}</td>

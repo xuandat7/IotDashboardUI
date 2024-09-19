@@ -58,11 +58,23 @@
 }
 
 .icon-on {
-    filter: brightness(1.5); /* or any other effect you want to achieve */
+    filter: brightness(1.5);
+    /* or any other effect you want to achieve */
     color: var(--primary);
-  }
+}
 
-  .icon-fan-on {
+.icon-fan-on {
     animation: spin 1s linear infinite;
-  }
+}
 
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 520px;
+}
+
+.loading-gif {
+    width: 100px;
+    height: 100px;
+}

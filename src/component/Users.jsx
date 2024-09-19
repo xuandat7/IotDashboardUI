@@ -2,6 +2,7 @@ import React from "react";
 import "./Users.css";
 
 import userPic from "../images/user_pic.jpg";
+import baoCao from "../images/baocao.pdf"
 
 function Users() {
   // Sample user data
@@ -12,9 +13,10 @@ function Users() {
     id: "B21DCCN223",
     nhomMH: "Lớp IoT và Ứng dụng - Nhóm 5",
     imageUrl: userPic, // Placeholder image, replace with actual 4x6 image
+    linkSwagger: "http://localhost:3001/api",
     linkGitHubUI: "https://github.com/xuandat7/IotDashboardUI",
     linkGitHubAPI: "https://github.com/xuandat7/IotDashboardAPI",
-    FilePDF: "https://docs.google.com/document/u/0/"
+    FilePDF: baoCao,
   };
 
   return (
@@ -52,8 +54,12 @@ function Users() {
                   <td> <a href='https://github.com/xuandat7/IotDashboardAPI'>{user.linkGitHubAPI}</a></td>
                 </tr>
                 <tr>
+                  <td><strong>Link Swagger:</strong></td>
+                  <td><a href='http://localhost:3001/api'>{user.linkSwagger}</a></td>
+                </tr>
+                <tr>
                   <td><strong>Link PDF:</strong></td>
-                  <td> <a href='https://docs.google.com/document/u/0/'>{user.FilePDF}</a></td>
+                  <td> <a href='https://docs.google.com/document/d/1UgOaSPJ6i5U0EmzR9gTwwyEIhSOVqWBNZPdmj2soUdc/edit'>link pdf</a></td>
                 </tr>
               </tbody>
             </table>

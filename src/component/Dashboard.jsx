@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Charts from "./Charts";
 import "./Dashboard.css";
 
 function Dashboard() {
@@ -9,53 +8,50 @@ function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/SensorData/allData", {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        "http://localhost:3001/SensorData/sort?sortField=createdAt&sortOrder=desc&page=1&limit=1",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      console.log(data)
+      console.log(data);
 
-      // Check if the data is an array and has at least one element
-      if (Array.isArray(data) && data.length > 0) {
-        const latestData = data[data.length - 1];  // Get the latest data point
+      // Đảm bảo 'data.rows' có ít nhất 1 phần tử
+      if (data.rows && data.rows.length > 0) {
+        const latestData = data.rows[0]; // Lấy phần tử đầu tiên (mới nhất)
 
-        // Log the latestData object to understand its structure
-        console.log("Latest data:", latestData);
-
-        // Check if latestData has the expected properties
-        if (latestData && latestData.temperature !== undefined && latestData.humidity !== undefined && latestData.light !== undefined) {
-          setTemperature(latestData.temperature);
-          setHumidity(latestData.humidity);
-          setBrightness(latestData.light);
-        } else {
-          console.error("Unexpected data format in latest entry:", latestData);
-        }
+        // Cập nhật giá trị temperature, humidity, brightness
+        setTemperature(latestData.temperature);
+        setHumidity(latestData.humidity);
+        setBrightness(latestData.light);
       } else {
-        console.error("Unexpected data format:", data);
+        console.error("No data available:", data);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
     }
   };
-  
 
   useEffect(() => {
     const updateData = () => {
       fetchData();
     };
 
-    // Fetch data initially and set an interval for updates
+    // Gọi fetch data ngay khi component mount
     updateData();
+
+    // Thiết lập interval để gọi API mỗi 5 giây
     const intervalId = setInterval(updateData, 5000);
 
-    // Cleanup on component unmount
+    // Cleanup interval khi component bị unmount
     return () => clearInterval(intervalId);
   }, []);
 
@@ -73,29 +69,21 @@ function Dashboard() {
 
   const getLightGradient = (lux) => {
     if (lux >= 1000) {
-      // Very bright, like direct sunlight
-      return "linear-gradient(to right, #ff7300, #ff0000)";
+      return "linear-gradient(to right, #ffffe0, #fffacd)"; // Very bright light: yellow-white gradient
     } else if (lux >= 700) {
-      // Bright, indoor sunlight or overcast outdoor
-      return "linear-gradient(to right, #f7971e, #ffd200)";
+      return "linear-gradient(to right, #fffacd, #ffebcd)"; // Bright light: light yellow to light beige
     } else if (lux >= 400) {
-      // Moderate, typical indoor lighting
-      return "linear-gradient(to right, #ffefba, #ffffff)";
+      return "linear-gradient(to right, #ffebcd, #ffe4b5)"; // Moderate light: light beige to moccasin
     } else if (lux >= 200) {
-      // Dim, typical dusk or indoor low lighting
-      return "linear-gradient(to right, #a1c4fd, #c2e9fb)";
+      return "linear-gradient(to right, #ffe4b5, #ffdead)"; // Dim light: moccasin to navajo white
     } else if (lux >= 100) {
-      // Very dim, early evening or cloudy conditions
-      return "linear-gradient(to right, #89f7fe, #66a6ff)";
+      return "linear-gradient(to right, #ffdead, #f5deb3)"; // Very dim light: navajo white to wheat
     } else if (lux >= 40) {
-      // Twilight or very low artificial lighting
-      return "linear-gradient(to right, #374785, #8a9eaf)";
+      return "linear-gradient(to right, #f5deb3, #deb887)"; // Low light: wheat to burlywood
     } else {
-      // Extremely dark, like nighttime
-      return "linear-gradient(to right, #2b5876, #4e4376)";
+      return "linear-gradient(to right, #deb887, #8b4513)"; // Very low light: burlywood to saddle brown
     }
   };
-  
 
   return (
     <div className="dashboard">
@@ -112,7 +100,9 @@ function Dashboard() {
               <div className="d-flex justify-content-between">
                 <i className="bi bi-thermometer icon"></i>
                 {temperature < 14 && <i className="bi bi-snow2"></i>}
-                {temperature > 31 && <i className="bi bi-brightness-high-fill"></i>}
+                {temperature > 31 && (
+                  <i className="bi bi-brightness-high-fill"></i>
+                )}
                 <div className="text-right text-dark">
                   <h5>{temperature}°C</h5>
                   <p>Nhiệt độ</p>
@@ -169,7 +159,11 @@ function Dashboard() {
                   <h5>{brightness} lux</h5>
                   <p>Độ sáng</p>
                   <small className="text-muted">
-                    {brightness > 100 ? "High" : brightness < 40 ? "Low" : "Normal"}
+                    {brightness > 100
+                      ? "High"
+                      : brightness < 40
+                      ? "Low"
+                      : "Normal"}
                   </small>
                 </div>
               </div>

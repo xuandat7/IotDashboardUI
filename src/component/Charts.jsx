@@ -34,31 +34,33 @@ function Charts() {
     ],
   });
 
-  // Fetch data from the API
+  // Fetch data from the new API
   const fetchData = async () => {
     try {
-      const response = await fetch("http://localhost:3001/SensorData/allData", {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        "http://localhost:3001/SensorData/sort?sortField=createdAt&sortOrder=desc&page=1&limit=10",
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      const latestData = Array.isArray(data) ? data[data.length - 1] : data;
 
-      return {
-        temperature: latestData.temperature,
-        humidity: latestData.humidity,
-        brightness: latestData.light,
-        time: new Date(latestData.createdAt).toLocaleTimeString(), // Get the time from latest data
-      };
+      return data.rows.map((item) => ({
+        temperature: item.temperature,
+        humidity: item.humidity,
+        brightness: item.light,
+        time: new Date(item.createdAt).toLocaleTimeString(),
+      }));
     } catch (error) {
       console.error("Error fetching data:", error);
-      return null;
+      return [];
     }
   };
 
@@ -102,20 +104,19 @@ function Charts() {
     const updateChart = async () => {
       const newData = await fetchData();
 
-      if (newData) {
+      if (newData.length > 0) {
         setChartData((prevData) => {
-          const updatedLabels = [...prevData.labels, newData.time];
-          const updatedTempData = [...prevData.datasets[0].data, newData.temperature];
-          const updatedHumidityData = [...prevData.datasets[1].data, newData.humidity];
-          const updatedBrightnessData = [...prevData.datasets[2].data, newData.brightness];
-
-          // Giới hạn chỉ hiển thị 10 điểm dữ liệu gần nhất
-          if (updatedLabels.length > 10) {
-            updatedLabels.shift();
-            updatedTempData.shift();
-            updatedHumidityData.shift();
-            updatedBrightnessData.shift();
-          }
+          // Đảo ngược thứ tự của các dữ liệu
+          const updatedLabels = newData.map((item) => item.time).reverse();
+          const updatedTempData = newData
+            .map((item) => item.temperature)
+            .reverse();
+          const updatedHumidityData = newData
+            .map((item) => item.humidity)
+            .reverse();
+          const updatedBrightnessData = newData
+            .map((item) => item.brightness)
+            .reverse();
 
           return {
             labels: updatedLabels,
@@ -129,7 +130,7 @@ function Charts() {
       }
     };
 
-    const intervalId = setInterval(updateChart, 5000); // Cập nhật dữ liệu mỗi 5 giây
+    const intervalId = setInterval(updateChart, 5000); // Cập nhật sau mỗi 5 giây
 
     return () => {
       clearInterval(intervalId);

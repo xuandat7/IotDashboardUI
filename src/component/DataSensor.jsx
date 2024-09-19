@@ -18,7 +18,7 @@ function DataSensor() {
       try {
         // Fetch paginated data
         const response = await axios.get(
-          "http://localhost:3001/SensorData/allData",
+          "http://localhost:3001/SensorData/all",
           {
             params: { page: currentPage, limit: rowsPerPage },
           }
@@ -29,7 +29,7 @@ function DataSensor() {
         });
 
         // Fetch all data for searching
-        const allResponse = await axios.get("http://localhost:3001/SensorData/allData");
+        const allResponse = await axios.get("http://localhost:3001/SensorData/all");
         setAllData(allResponse.data || []); // Ensure allData is always an array
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -45,7 +45,7 @@ function DataSensor() {
     setCurrentPage(1); // Reset to the first page on search
 
     try {
-      const response = await axios.get("http://localhost:3001/SensorData/allData", {
+      const response = await axios.get("http://localhost:3001/SensorData/all", {
         params: { search: term },
       });
       setAllData(response.data || []); // Ensure allData is always an array

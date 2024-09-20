@@ -254,16 +254,22 @@ function ActionHistory() {
         <nav>
           <div className="row">
             <div className="col-lg-2">
-              <div className="form-group d-flex align-items-center">
-                <label>Rows:</label>
-                <input
-                  type="number"
-                  className="form-control mx-2"
-                  value={rowsPerPage}
-                  onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
-                  min="1"
-                />
-              </div>
+            <div className="form-group d-flex align-items-center">
+  <label>Rows:</label>
+  <input
+    type="number"
+    className="form-control mx-2"
+    value={rowsPerPage}
+    onChange={(e) => {
+      const value = parseInt(e.target.value, 10);
+      if (value >= 1) {
+        setRowsPerPage(value);
+      }
+    }}
+    min="1"
+  />
+</div>
+
             </div>
             <div className="col-lg-10">
               <ul className="pagination justify-content-end">

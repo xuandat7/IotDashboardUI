@@ -1,57 +1,53 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
-import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa"; // Sorting icons
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import * as moment from 'moment-timezone';
 
 function DataSensor() {
   const [data, setData] = useState({ rows: [], count: 0 });
-  const [allData, setAllData] = useState([]); // State to hold all data for searching
   const [searchTerm, setSearchTerm] = useState("");
   const [searchCategory, setSearchCategory] = useState("all");
   const [sortBy, setSortBy] = useState("id");
   const [isAscending, setIsAscending] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(20);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch paginated data
-        const response = await axios.get(
-          "http://localhost:3001/SensorData/all",
-          {
-            params: { page: currentPage, limit: rowsPerPage },
-          }
-        );
+        const response = await axios.get("http://localhost:3001/SensorData", {
+          params: {
+            page: currentPage,
+            limit: rowsPerPage,
+            sortField: sortBy,
+            sortOrder: isAscending ? "asc" : "desc",
+            search: searchTerm, // Send the search term
+            field: searchCategory === "all" ? undefined : searchCategory, // Conditionally send field param
+          },
+        });
         setData({
           rows: response.data.rows,
           count: response.data.count,
         });
-
-        // Fetch all data for searching
-        const allResponse = await axios.get("http://localhost:3001/SensorData/all");
-        setAllData(allResponse.data || []); // Ensure allData is always an array
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchData();
-  }, [currentPage, rowsPerPage]);
+  }, [
+    currentPage,
+    rowsPerPage,
+    sortBy,
+    isAscending,
+    searchTerm,
+    searchCategory,
+  ]);
 
-  const handleSearch = async (event) => {
-    const term = event.target.value;
-    setSearchTerm(term);
-    setCurrentPage(1); // Reset to the first page on search
-
-    try {
-      const response = await axios.get("http://localhost:3001/SensorData/all", {
-        params: { search: term },
-      });
-      setAllData(response.data || []); // Ensure allData is always an array
-    } catch (error) {
-      console.error("Error fetching search data:", error);
-    }
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
   const handleCategoryChange = (event) => {
@@ -76,51 +72,11 @@ function DataSensor() {
     }
   };
 
-  const sortData = (rows) => {
-    return rows.sort((a, b) => {
-      if (a[sortBy] < b[sortBy]) return isAscending ? -1 : 1;
-      if (a[sortBy] > b[sortBy]) return isAscending ? 1 : -1;
-      return 0;
-    });
-  };
-
   const formatTimestamp = (timestamp) => {
-    return format(new Date(timestamp), "dd-MM-yyyy HH:mm:ss");
+    return moment.tz(timestamp, 'Asia/Ho_Chi_Minh').format('YYYY-MM-DD HH:mm:ss');
   };
 
-  // Ensure allData is an array before calling filter
-  // Filter data based on search term and category
-  const filteredData = allData.filter((row) => {
-    if (searchTerm === "") return true; // No filtering if no search term
-  
-    if (searchCategory === "all") {
-      // Search across all relevant fields (temperature, humidity, light, and createdAt)
-      return (
-        row.temperature?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.humidity?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.light?.toString().toLowerCase().includes(searchTerm.toLowerCase()) ||
-        formatTimestamp(row.createdAt).includes(searchTerm)
-      );
-    } else if (searchCategory === "createdAt") {
-      const formattedTimestamp = formatTimestamp(row.createdAt);
-      return formattedTimestamp.includes(searchTerm);
-    } else {
-      return row[searchCategory]
-        ?.toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-    }
-  });
-  
-
-  const sortedData = sortData(filteredData); // Sort the data before paginating
-
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
-  const paginatedData = sortedData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
+  const totalPages = Math.ceil(data.count / rowsPerPage);
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -217,18 +173,20 @@ function DataSensor() {
             value={searchCategory}
             onChange={handleCategoryChange}
           >
-            <option value="temperature">Temperature</option>
+            <option value="Temperature">Temperature</option>
             <option value="humidity">Humidity</option>
             <option value="light">Light</option>
             <option value="createdAt">Time</option>
-            <option value="all">All</option> {/* Added "All" option */}
+            <option value="all">All</option>
           </select>
         </div>
         <div className="col-lg-8">
           <input
             type="text"
             className="form-control"
-            placeholder={`Search by ${searchCategory}...`}
+            placeholder={`Search by ${
+              searchCategory === "all" ? "any field" : searchCategory
+            }...`}
             value={searchTerm}
             onChange={handleSearch}
             style={{ width: "100%" }}
@@ -257,8 +215,8 @@ function DataSensor() {
           </tr>
         </thead>
         <tbody>
-          {paginatedData.length > 0 ? (
-            paginatedData.map((row) => (
+          {data.rows.length > 0 ? (
+            data.rows.map((row) => (
               <tr key={row.id}>
                 <th scope="row">{row.id}</th>
                 <td>{row.temperature}</td>
@@ -287,7 +245,9 @@ function DataSensor() {
                   type="number"
                   className="form-control mx-2"
                   value={rowsPerPage}
-                  onChange={(e) => setRowsPerPage(parseInt(e.target.value))}
+                  onChange={(e) =>
+                    setRowsPerPage(parseInt(e.target.value) || 1)
+                  }
                   min="1"
                 />
               </div>

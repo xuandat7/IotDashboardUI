@@ -1,174 +1,194 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
-import { FaSort, FaSearch } from "react-icons/fa"; // Import icons
+import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
+import * as moment from 'moment-timezone';
 
 function ActionHistory() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState({ rows: [], count: 0 });
   const [searchTerm, setSearchTerm] = useState("");
   const [searchCategory, setSearchCategory] = useState("all");
-  const [loading, setLoading] = useState(true);
-  const [sortField, setSortField] = useState(""); // For sorting field
-  const [sortOrder, setSortOrder] = useState("asc"); // For sorting order (asc/desc)
+  const [sortBy, setSortBy] = useState("id");
+  const [isAscending, setIsAscending] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Function to fetch data
-  const fetchData = async (page = 1, limit = 10) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `http://localhost:3001/GetDataAction/allData`
-      );
-      console.log(response.data);
-      setData(response.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    // Fetch initial data
-    fetchData(currentPage, rowsPerPage);
-  }, [currentPage, rowsPerPage]);
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/GetDataAction/allDataPaginate", {
+          params: {
+            page: currentPage,
+            limit: rowsPerPage,
+            sortField: sortBy,
+            sortOrder: isAscending ? "asc" : "desc",
+            search: searchTerm, // Send the search term
+            field: searchCategory === "all" ? undefined : searchCategory, // Conditionally send field param
+          },
+        });
+        setData({
+          rows: response.data.rows,
+          count: response.data.count,
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
 
-  // Handle search input change
+    fetchData();
+  }, [
+    currentPage,
+    rowsPerPage,
+    sortBy,
+    isAscending,
+    searchTerm,
+    searchCategory,
+  ]);
+
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    setCurrentPage(1); // Reset to first page on search
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  // Handle search category change
   const handleCategoryChange = (event) => {
     setSearchCategory(event.target.value);
     setSearchTerm(""); // Clear search term when category changes
-    setCurrentPage(1); // Reset to first page on category change
   };
 
-  // Handle sorting
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setIsAscending(!isAscending); // Toggle sorting order
     } else {
-      setSortField(field);
-      setSortOrder("asc");
+      setSortBy(column);
+      setIsAscending(true); // Default to ascending when switching columns
     }
   };
 
-  // Format timestamp
+  const renderSortIcon = (column) => {
+    if (sortBy === column) {
+      return isAscending ? <FaSortUp /> : <FaSortDown />;
+    } else {
+      return <FaSort />;
+    }
+  };
+
   const formatTimestamp = (timestamp) => {
-    return format(new Date(timestamp), "dd-MM-yyyy HH:mm:ss");
+    return moment.tz(timestamp, 'Asia/Ho_Chi_Minh').format('YYYY-MM-DD HH:mm:ss');
   };
 
-  // Filter data based on search term and category
-  const filteredData = data.filter((row) => {
-    if (searchTerm === "") return true; // No filtering if no search term
+  const totalPages = Math.ceil(data.count / rowsPerPage);
 
-    if (searchCategory === "all") {
-      // Search all fields
-      return (
-        row.device.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.state.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        formatTimestamp(row.timestamp).includes(searchTerm)
-      );
-    } else if (searchCategory === "timestamp") {
-      const formattedTimestamp = formatTimestamp(row.timestamp);
-      return formattedTimestamp.includes(searchTerm);
-    } else {
-      return row[searchCategory]
-        ?.toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
     }
-  });
+  };
 
-  // Apply sorting
-  const sortedData = [...filteredData].sort((a, b) => {
-    if (!sortField) return 0;
-    const aValue = a[sortField];
-    const bValue = b[sortField];
-    if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
-    if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
-
-  // Apply pagination to sorted and filtered data
-  const paginatedData = sortedData.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-
-  // Calculate total pages
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-
-  // Render pagination
   const renderPagination = () => {
     const pagination = [];
     const maxPagesToShow = 3;
 
-    for (let i = 1; i <= totalPages; i++) {
-      if (i <= maxPagesToShow || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
         pagination.push(
           <li
             key={i}
             className={`page-item ${currentPage === i ? "active" : ""}`}
           >
-            <button
-              className="page-link"
-              onClick={() => setCurrentPage(i)}
-            >
+            <button className="page-link" onClick={() => handlePageChange(i)}>
               {i}
             </button>
           </li>
         );
-      } else if (i === maxPagesToShow + 1 || i === totalPages - 1) {
+      }
+    } else {
+      pagination.push(
+        <li
+          key={1}
+          className={`page-item ${currentPage === 1 ? "active" : ""}`}
+        >
+          <button className="page-link" onClick={() => handlePageChange(1)}>
+            1
+          </button>
+        </li>
+      );
+
+      if (currentPage > maxPagesToShow + 1) {
         pagination.push(
-          <li key={i} className="page-item disabled">
+          <li key="ellipsis-start" className="page-item disabled">
             <span className="page-link">...</span>
           </li>
         );
       }
+
+      const startPage = Math.max(2, currentPage - 1);
+      const endPage = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = startPage; i <= endPage; i++) {
+        pagination.push(
+          <li
+            key={i}
+            className={`page-item ${currentPage === i ? "active" : ""}`}
+          >
+            <button className="page-link" onClick={() => handlePageChange(i)}>
+              {i}
+            </button>
+          </li>
+        );
+      }
+
+      if (currentPage < totalPages - maxPagesToShow) {
+        pagination.push(
+          <li key="ellipsis-end" className="page-item disabled">
+            <span className="page-link">...</span>
+          </li>
+        );
+      }
+
+      pagination.push(
+        <li
+          key={totalPages}
+          className={`page-item ${currentPage === totalPages ? "active" : ""}`}
+        >
+          <button
+            className="page-link"
+            onClick={() => handlePageChange(totalPages)}
+          >
+            {totalPages}
+          </button>
+        </li>
+      );
     }
 
     return pagination;
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <main id="main" className="main">
       <h2 className="text-left">Action History</h2>
-
-      <div className="row mt-3 mb-3">
-        <div className="col-md-4">
+      <div className="row mb-3 mt-3">
+        <div className="col-md-2">
           <select
             className="form-control"
-            onChange={handleCategoryChange}
             value={searchCategory}
+            onChange={handleCategoryChange}
           >
             <option value="device">Device</option>
             <option value="state">State</option>
             <option value="timestamp">Timestamp</option>
-            <option value="all">All</option> {/* Added "All" option */}
+            <option value="all">All</option>
           </select>
         </div>
-
-        <div className="col-md-6">
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder={`Search by ${searchCategory}...`}
-              value={searchTerm}
-              onChange={handleSearch}
-              style={{ width: "100%" }}
-            />
-            
-          </div>
+        <div className="col-lg-8">
+          <input
+            type="text"
+            className="form-control"
+            placeholder={`Search by ${
+              searchCategory === "all" ? "any field" : searchCategory
+            }...`}
+            value={searchTerm}
+            onChange={handleSearch}
+          />
         </div>
       </div>
 
@@ -178,7 +198,7 @@ function ActionHistory() {
             <th scope="col">
               ID
               <button onClick={() => handleSort("id")} className="btn btn-link">
-                <FaSort />
+                {renderSortIcon("id")}
               </button>
             </th>
             <th scope="col">
@@ -187,7 +207,7 @@ function ActionHistory() {
                 onClick={() => handleSort("device")}
                 className="btn btn-link"
               >
-                <FaSort />
+                {renderSortIcon("device")}
               </button>
             </th>
             <th scope="col">
@@ -196,7 +216,7 @@ function ActionHistory() {
                 onClick={() => handleSort("state")}
                 className="btn btn-link"
               >
-                <FaSort />
+                {renderSortIcon("state")}
               </button>
             </th>
             <th scope="col">
@@ -205,14 +225,14 @@ function ActionHistory() {
                 onClick={() => handleSort("timestamp")}
                 className="btn btn-link"
               >
-                <FaSort />
+                {renderSortIcon("timestamp")}
               </button>
             </th>
           </tr>
         </thead>
         <tbody>
-          {paginatedData.length > 0 ? (
-            paginatedData.map((row) => (
+          {data.rows.length > 0 ? (
+            data.rows.map((row) => (
               <tr key={row.id}>
                 <th scope="row">{row.id}</th>
                 <td>{row.device}</td>
@@ -252,7 +272,7 @@ function ActionHistory() {
                 >
                   <button
                     className="page-link"
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                    onClick={() => handlePageChange(currentPage - 1)}
                   >
                     Previous
                   </button>
@@ -265,7 +285,7 @@ function ActionHistory() {
                 >
                   <button
                     className="page-link"
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                    onClick={() => handlePageChange(currentPage + 1)}
                   >
                     Next
                   </button>

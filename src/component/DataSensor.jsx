@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import * as moment from 'moment-timezone';
+import * as moment from "moment-timezone";
 
 function DataSensor() {
   const [data, setData] = useState({ rows: [], count: 0 });
@@ -73,7 +73,9 @@ function DataSensor() {
   };
 
   const formatTimestamp = (timestamp) => {
-    return moment.tz(timestamp, 'Asia/Ho_Chi_Minh').format('YYYY-MM-DD HH:mm:ss');
+    return moment
+      .tz(timestamp, "Asia/Ho_Chi_Minh")
+      .format("YYYY-MM-DD HH:mm:ss");
   };
 
   const totalPages = Math.ceil(data.count / rowsPerPage);
@@ -197,20 +199,61 @@ function DataSensor() {
       <table className="table table-bordered table-hover">
         <thead className="table-light">
           <tr>
-            <th scope="col" onClick={() => handleSort("id")}>
-              ID {renderSortIcon("id")}
+            <th scope="col">
+              <div className="d-flex align-items-center">
+                <span>ID</span>
+
+                <button
+                  onClick={() => handleSort("id")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("id")}
+                </button>
+              </div>
             </th>
-            <th scope="col" onClick={() => handleSort("temperature")}>
-              Temperature {renderSortIcon("temperature")}
+            <th scope="col">
+              <div className="d-flex align-items-center">
+                <span>Temperature</span>
+                <button
+                  onClick={() => handleSort("temperature")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("temperature")}
+                </button>
+              </div>
             </th>
-            <th scope="col" onClick={() => handleSort("humidity")}>
-              Humidity {renderSortIcon("humidity")}
+            <th scope="col">
+              <div className="d-flex align-items-center">
+                <span>Humidity</span>
+                <button
+                  onClick={() => handleSort("humidity")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("humidity")}
+                </button>
+              </div>
             </th>
-            <th scope="col" onClick={() => handleSort("light")}>
-              Light {renderSortIcon("light")}
+            <th scope="col">
+              <div className="d-flex align-items-center">
+                <span>Light</span>
+                <button
+                  onClick={() => handleSort("light")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("light")}
+                </button>
+              </div>
             </th>
-            <th scope="col" onClick={() => handleSort("createdAt")}>
-              Time {renderSortIcon("createdAt")}
+            <th scope="col">
+              <div className="d-flex align-items-center">
+                <span>Time</span>
+                <button
+                  onClick={() => handleSort("createdAt")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("createdAt")}
+                </button>
+              </div>
             </th>
           </tr>
         </thead>

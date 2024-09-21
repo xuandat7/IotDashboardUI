@@ -145,7 +145,7 @@ function Charts() {
       <div className="row">
         <div className="col-md-12 mt-3">
           <div className="card h-100">
-            <div className="card-body" style={{ height: "520px" }}>
+            <div className="card-body" style={{ height: "400px" }}>
               <canvas id="combinedChart" ref={chartRef}></canvas>
             </div>
           </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
-import * as moment from 'moment-timezone';
+import * as moment from "moment-timezone";
 
 function ActionHistory() {
   const [data, setData] = useState({ rows: [], count: 0 });
@@ -16,16 +16,19 @@ function ActionHistory() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/GetDataAction/allDataPaginate", {
-          params: {
-            page: currentPage,
-            limit: rowsPerPage,
-            sortField: sortBy,
-            sortOrder: isAscending ? "asc" : "desc",
-            search: searchTerm, // Send the search term
-            field: searchCategory === "all" ? undefined : searchCategory, // Conditionally send field param
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:3001/GetDataAction/allDataPaginate",
+          {
+            params: {
+              page: currentPage,
+              limit: rowsPerPage,
+              sortField: sortBy,
+              sortOrder: isAscending ? "asc" : "desc",
+              search: searchTerm, // Send the search term
+              field: searchCategory === "all" ? undefined : searchCategory, // Conditionally send field param
+            },
+          }
+        );
         setData({
           rows: response.data.rows,
           count: response.data.count,
@@ -73,7 +76,9 @@ function ActionHistory() {
   };
 
   const formatTimestamp = (timestamp) => {
-    return moment.tz(timestamp, 'Asia/Ho_Chi_Minh').format('YYYY-MM-DD HH:mm:ss');
+    return moment
+      .tz(timestamp, "Asia/Ho_Chi_Minh")
+      .format("YYYY-MM-DD HH:mm:ss");
   };
 
   const totalPages = Math.ceil(data.count / rowsPerPage);
@@ -196,37 +201,48 @@ function ActionHistory() {
         <thead className="table-light">
           <tr>
             <th scope="col">
-              ID
-              <button onClick={() => handleSort("id")} className="btn btn-link">
-                {renderSortIcon("id")}
-              </button>
+              <div className="d-flex align-items-center">
+                <span>ID</span>
+                <button
+                  onClick={() => handleSort("id")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("id")}
+                </button>
+              </div>
             </th>
             <th scope="col">
-              Device
-              <button
-                onClick={() => handleSort("device")}
-                className="btn btn-link"
-              >
-                {renderSortIcon("device")}
-              </button>
+              <div className="d-flex align-items-center">
+                <span>Device</span>
+                <button
+                  onClick={() => handleSort("device")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("device")}
+                </button>
+              </div>
             </th>
             <th scope="col">
-              State
-              <button
-                onClick={() => handleSort("state")}
-                className="btn btn-link"
-              >
-                {renderSortIcon("state")}
-              </button>
+              <div className="d-flex align-items-center">
+                <span>State</span>
+                <button
+                  onClick={() => handleSort("state")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("state")}
+                </button>
+              </div>
             </th>
             <th scope="col">
-              Timestamp
-              <button
-                onClick={() => handleSort("timestamp")}
-                className="btn btn-link"
-              >
-                {renderSortIcon("timestamp")}
-              </button>
+              <div className="d-flex align-items-center">
+                <span>Timestamp</span>
+                <button
+                  onClick={() => handleSort("timestamp")}
+                  className="btn btn-link"
+                >
+                  {renderSortIcon("timestamp")}
+                </button>
+              </div>
             </th>
           </tr>
         </thead>
@@ -254,22 +270,21 @@ function ActionHistory() {
         <nav>
           <div className="row">
             <div className="col-lg-2">
-            <div className="form-group d-flex align-items-center">
-  <label>Rows:</label>
-  <input
-    type="number"
-    className="form-control mx-2"
-    value={rowsPerPage}
-    onChange={(e) => {
-      const value = parseInt(e.target.value, 10);
-      if (value >= 1) {
-        setRowsPerPage(value);
-      }
-    }}
-    min="1"
-  />
-</div>
-
+              <div className="form-group d-flex align-items-center">
+                <label>Rows:</label>
+                <input
+                  type="number"
+                  className="form-control mx-2"
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value, 10);
+                    if (value >= 1) {
+                      setRowsPerPage(value);
+                    }
+                  }}
+                  min="1"
+                />
+              </div>
             </div>
             <div className="col-lg-10">
               <ul className="pagination justify-content-end">

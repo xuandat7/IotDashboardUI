@@ -114,9 +114,9 @@ function Switch() {
   return (
     <section className="switch section">
       <div className="row">
-        <div className="card card-switch mt-3" style={{ height: "520px" }}>
+        <div className="card card-switch mt-3" style={{ height: "400px" }}>
           {/* Temperature Switch */}
-          <h6>Điều khiển nhiệt độ</h6>
+          {/* <h6>Điều khiển nhiệt độ</h6> */}
           <div className="temp-switch d-flex align-items-center">
             <i
               className={`bi bi-thermometer ${
@@ -147,7 +147,7 @@ function Switch() {
           </div>
 
           {/* Fan Switch */}
-          <h6>Điều khiển quạt</h6>
+          {/* <h6>Điều khiển quạt</h6> */}
           <div className="humidity-switch d-flex align-items-center">
             <i
               className={`bi bi-fan icon ${
@@ -178,7 +178,7 @@ function Switch() {
           </div>
 
           {/* Light Switch */}
-          <h6>Điều khiển đèn</h6>
+          {/* <h6>Điều khiển đèn</h6> */}
           <div className="light-switch d-flex align-items-center">
             <i
               className={`bi bi-lightbulb icon ${

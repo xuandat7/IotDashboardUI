@@ -1,48 +1,66 @@
+.switch-section {
+    padding: 20px;
+}
+
 .card-switch {
-    height: 400px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    max-width: 500px;
+    /* padding: 20px; */
+    transition: transform 0.2s ease-in-out;
+}
+
+.switch-container {
+    padding: 10px 0;
 
 }
 
-
-.card:hover {
-    background-color: rgba(40, 36, 36, 0.089);
-    transition: 0.3s ease;
-
+.icon {
+    font-size: 30px;
 }
 
-.toggle {
-
-    width: 100px;
-    height: 40px;
-    background-color: #1c19b6;
-    border-radius: 3px;
-    padding: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+.error-message {
+    font-size: 14px;
+    font-weight: bold;
 }
 
-.toggle h5 {
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 3px;
-    font-family: 'Inter', sans-serif;
+.card-switch:hover {
+    transform: scale(1.02)
 }
 
-/* Define the animation */
-@keyframes brighten {
+@keyframes temperature-animation {
     0% {
-        filter: brightness(100%);
+        transform: scale(1);
+        color: #ff4e42;
+    }
+
+    50% {
+        transform: scale(1.2);
+        color: #f00;
     }
 
     100% {
-        filter: brightness(350%);
+        transform: scale(1);
+        color: #ff4e42;
     }
 }
 
-@keyframes spin {
+@keyframes light-on-animation {
+    0% {
+        opacity: 0.5;
+        transform: rotate(0deg);
+    }
+
+    50% {
+        opacity: 1;
+        transform: rotate(20deg);
+    }
+
+    100% {
+        opacity: 0.5;
+        transform: rotate(0deg);
+    }
+}
+
+@keyframes fan-on-animation {
     0% {
         transform: rotate(0deg);
     }
@@ -52,30 +70,14 @@
     }
 }
 
-/* Apply the animation to the icon */
-.animate-icon {
-    animation: brighten 1s linear infinite alternate;
+.icon-temperature-active {
+    animation: temperature-animation 1s ease-in-out infinite;
 }
 
-.icon-on {
-    filter: brightness(1.5);
-    /* or any other effect you want to achieve */
-    color: var(--primary);
+.icon-light-active {
+    animation: light-on-animation 1.5s ease-in-out infinite;
 }
 
-.icon-fan-on {
-    animation: spin 1s linear infinite;
+.icon-fan-active {
+    animation: fan-on-animation 2s linear infinite;
 }
-
-.loading-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 520px;
-}
-
-.loading-gif {
-    width: 50px;
-    height: 50px;
-  }
-  

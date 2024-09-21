@@ -34,7 +34,6 @@ function Charts() {
     ],
   });
 
-  // Fetch data from the new API
   const fetchData = async () => {
     try {
       const response = await fetch(
@@ -81,6 +80,16 @@ function Charts() {
           title: {
             display: true,
             text: "Temperature, Humidity, and Brightness Chart",
+            font: {
+              size: 18,
+              family: "'Poppins', sans-serif",
+              weight: "bold",
+            },
+            padding: {
+              top: 20,
+              bottom: 20,
+            },
+            color: "#333",
           },
         },
         scales: {
@@ -106,7 +115,6 @@ function Charts() {
 
       if (newData.length > 0) {
         setChartData((prevData) => {
-          // Đảo ngược thứ tự của các dữ liệu
           const updatedLabels = newData.map((item) => item.time).reverse();
           const updatedTempData = newData
             .map((item) => item.temperature)
@@ -130,7 +138,7 @@ function Charts() {
       }
     };
 
-    const intervalId = setInterval(updateChart, 5000); // Cập nhật sau mỗi 5 giây
+    const intervalId = setInterval(updateChart, 5000);
 
     return () => {
       clearInterval(intervalId);
@@ -143,8 +151,8 @@ function Charts() {
   return (
     <section className="charts section">
       <div className="row">
-        <div className="col-md-12 mt-3">
-          <div className="card h-100">
+        <div className="col-md-12 mt-3 p-3">
+          <div className="card chart-card shadow">
             <div className="card-body" style={{ height: "400px" }}>
               <canvas id="combinedChart" ref={chartRef}></canvas>
             </div>

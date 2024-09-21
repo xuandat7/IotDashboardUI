@@ -1,43 +1,82 @@
-.dashboard i{
-    font-size: 30px;
-}
-
-
-
-.card-2 {
-    background-color: #317cec6e;
-    border: 2px solid #ddd;
-    border-radius: 8px;
+.dashboard .card {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    margin: 15px 0;
+    transition: all 0.3s ease;
+    cursor: pointer;
     overflow: hidden;
-
-}
-
-.dashboard h5{
-    font-size: 30px;
-    font-weight: 600;
-    margin-bottom: 5px;
-    font-family: 'Roboto', sans-serif;
-    color: black;
-}
-
-.dashboard p {
-    font-size: 16px;
-    font-weight: 500;
-    color: black;
-    font-family: 'Inter', sans-serif;
-
-}
-
-.card-body {
-    border-radius: 1.5px;
-    border-color: darkgray;
-    border-width: 1px;
-
-}
-
-.card-body:hover {
-    background-color: rgba(222, 222, 226, 0.171);
-    transition: 0.3s ease;
-    color: white;
-    
-}
+  }
+  
+  .dashboard .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .icon {
+    font-size: 2.5rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-right: 15px;
+    transition: transform 0.3s ease;
+  }
+  
+  .dashboard .card:hover .icon {
+    transform: scale(1.1);
+  }
+  
+  .card-content {
+    text-align: right;
+    flex-grow: 1;
+  }
+  
+  .card-content h5 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin: 0;
+    transition: transform 0.3s ease;
+  }
+  
+  .dashboard .card:hover .card-content h5 {
+    transform: scale(1.05);
+  }
+  
+  .card-content p {
+    margin: 5px 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .text-muted {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .status-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.2rem;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+  
+  .dashboard .card:hover .status-icon {
+    opacity: 1;
+  }
+  
+  @media (max-width: 768px) {
+    .card-content h5 {
+      font-size: 1.4rem;
+    }
+    .icon {
+      font-size: 1.5rem;
+    }
+  }

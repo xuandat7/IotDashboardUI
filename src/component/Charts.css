@@ -1,16 +1,27 @@
-
-.card-body {
-   position: "relative",
-   
-}
-
-.card-body .btn-group {
-    position: absolute;
-    top: 0;
-    right: 0px;
-    /* left: 0; */
-}
-
-.chart-btn {
-    display: none;
-}
+.card.chart-card {
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1); /* Adjust shadow for a modern look */
+    transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+  }
+  
+  .card.chart-card:hover {
+    transform: scale(1.02); /* Slight zoom on hover */
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+  
+  canvas {
+    max-width: 100%;
+  }
+  
+  .chart-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  

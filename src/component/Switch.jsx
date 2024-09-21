@@ -17,7 +17,6 @@ function Switch() {
   const [isLightLoading, setIsLightLoading] = useState(false); // Light loading state
   const [isTempLoading, setIsTempLoading] = useState(false); // Temperature loading state
 
-  // Fetch the initial states from the API
   useEffect(() => {
     const fetchDeviceStatus = async () => {
       try {
@@ -40,9 +39,7 @@ function Switch() {
       }
     };
 
-    // Fetch device status every 2 seconds to update the UI
     const intervalId = setInterval(fetchDeviceStatus, 2000);
-
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []);
 
@@ -55,15 +52,14 @@ function Switch() {
       newFanState ? "on" : "off"
     }`;
 
-    setIsFanLoading(true); // Show loading spinner
+    setIsFanLoading(true);
     try {
       await axios.post(apiFanUrl);
-      console.log(`Request to turn fan ${newFanState ? "on" : "off"} sent`);
-      // Không cập nhật FanSetChecked ngay lập tức, chờ phản hồi từ API qua useEffect
+      console.log(`Fan ${newFanState ? "on" : "off"} request sent`);
     } catch (error) {
       console.error("Error toggling fan:", error);
     } finally {
-      setIsFanLoading(false); // Hide loading spinner after response
+      setIsFanLoading(false);
     }
   };
 
@@ -76,15 +72,14 @@ function Switch() {
       newLightState ? "on" : "off"
     }`;
 
-    setIsLightLoading(true); // Show loading spinner
+    setIsLightLoading(true);
     try {
       await axios.post(apiLedUrl);
-      console.log(`Request to turn light ${newLightState ? "on" : "off"} sent`);
-      // Không cập nhật LightSetChecked ngay lập tức, chờ phản hồi từ API qua useEffect
+      console.log(`Light ${newLightState ? "on" : "off"} request sent`);
     } catch (error) {
       console.error("Error toggling light:", error);
     } finally {
-      setIsLightLoading(false); // Hide loading spinner after response
+      setIsLightLoading(false);
     }
   };
 
@@ -97,115 +92,93 @@ function Switch() {
       newTempState ? "on" : "off"
     }`;
 
-    setIsTempLoading(true); // Show loading spinner
+    setIsTempLoading(true);
     try {
       await axios.post(apiTempUrl);
-      console.log(
-        `Request to turn temperature ${newTempState ? "on" : "off"} sent`
-      );
-      // Không cập nhật TempSetChecked ngay lập tức, chờ phản hồi từ API qua useEffect
+      console.log(`Temperature ${newTempState ? "on" : "off"} request sent`);
     } catch (error) {
       console.error("Error toggling temperature:", error);
     } finally {
-      setIsTempLoading(false); // Hide loading spinner after response
+      setIsTempLoading(false);
     }
   };
 
   return (
-    <section className="switch section">
-      <div className="row">
-        <div className="card card-switch mt-3" style={{ height: "400px" }}>
-          {/* Temperature Switch */}
-          {/* <h6>Điều khiển nhiệt độ</h6> */}
-          <div className="temp-switch d-flex align-items-center">
-            <i
-              className={`bi bi-thermometer ${
-                TempChecked ? "icon-on animate-icon" : ""
-              }`}
-              style={{ fontSize: "30px" }}
-            ></i>
-            <Toggle
-              className="toggle mx-2 toggle-handle"
-              onClick={toggleTemperature}
-              on={<h5>On</h5>}
-              off={<h5>Off</h5>}
-              size="lg"
-              active={TempChecked}
-              onstyle="success"
-              offstyle="secondary"
-              disabled={!TempConnected || !isConnected || isTempLoading}
-            />
-            {isTempLoading && (
-              <button className="btn btn-primary" type="button" disabled>
-                <span
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-              </button>
-            )}
-          </div>
+    <section className="switch-section">
+      <div className="row justify-content-center">
+        <div className="card card-switch shadow p-3 mt-3 bg-white rounded">
+          <h5 className="text-center mb-4">Device Control Panel</h5>
 
-          {/* Fan Switch */}
-          {/* <h6>Điều khiển quạt</h6> */}
-          <div className="humidity-switch d-flex align-items-center">
-            <i
-              className={`bi bi-fan icon ${
-                FanChecked ? "icon-on icon-fan-on" : ""
-              }`}
-              style={{ fontSize: "30px" }}
-            ></i>
-            <Toggle
-              className="toggle mx-2"
-              onClick={toggleFan}
-              on={<h5>On</h5>}
-              off={<h5>Off</h5>}
-              size="lg"
-              active={FanChecked}
-              onstyle="success"
-              offstyle="secondary"
-              disabled={!FanConnected || !isConnected || isFanLoading}
-            />
-            {isFanLoading && (
-              <button className="btn btn-primary" type="button" disabled>
-                <span
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-              </button>
-            )}
-          </div>
+          <div className="switch-container">
+            {/* Temperature Switch */}
+            <div className="d-flex align-items-center justify-content-between mb-4">
+              <i
+                className={`bi bi-thermometer ${
+                  TempChecked ? "icon-temperature-active" : ""
+                }`}
+                style={{ fontSize: "30px" }}
+              ></i>
+              <Toggle
+                className="toggle mx-2 toggle-handle"
+                onClick={toggleTemperature}
+                on={<h5>On</h5>}
+                off={<h5>Off</h5>}
+                size="lg"
+                active={TempChecked}
+                onstyle="success"
+                offstyle="secondary"
+                disabled={!TempConnected || !isConnected || isTempLoading}
+              />
+              {isTempLoading && (
+                <span className="spinner-border spinner-border-sm text-primary"></span>
+              )}
+            </div>
 
-          {/* Light Switch */}
-          {/* <h6>Điều khiển đèn</h6> */}
-          <div className="light-switch d-flex align-items-center">
-            <i
-              className={`bi bi-lightbulb icon ${
-                LightChecked ? "icon-on animate-icon" : ""
-              }`}
-              style={{ fontSize: "30px" }}
-            ></i>
-            <Toggle
-              className="toggle mx-2"
-              onClick={toggleLight}
-              on={<h5>On</h5>}
-              off={<h5>Off</h5>}
-              size="lg"
-              active={LightChecked}
-              onstyle="success"
-              offstyle="secondary"
-              disabled={!LightConnected || !isConnected || isLightLoading}
-            />
-            {isLightLoading && (
-              <button className="btn btn-primary" type="button" disabled>
-                <span
-                  className="spinner-border spinner-border-sm"
-                  role="status"
-                  aria-hidden="true"
-                ></span>
-              </button>
-            )}
+            {/* Light Switch */}
+            <div className="d-flex align-items-center justify-content-between mb-4">
+              <i
+                className={`bi bi-lightbulb ${
+                  LightChecked ? "icon-light-active" : ""
+                }`}
+                style={{ fontSize: "30px" }}
+              ></i>
+              <Toggle
+                className="toggle mx-2"
+                onClick={toggleLight}
+                on={<h5>On</h5>}
+                off={<h5>Off</h5>}
+                size="lg"
+                active={LightChecked}
+                onstyle="success"
+                offstyle="secondary"
+                disabled={!LightConnected || !isConnected || isLightLoading}
+              />
+              {isLightLoading && (
+                <span className="spinner-border spinner-border-sm text-primary"></span>
+              )}
+            </div>
+
+            {/* Fan Switch */}
+            <div className="d-flex align-items-center justify-content-between mb-4">
+              <i
+                className={`bi bi-fan ${FanChecked ? "icon-fan-active" : ""}`}
+                style={{ fontSize: "30px" }}
+              ></i>
+              <Toggle
+                className="toggle mx-2"
+                onClick={toggleFan}
+                on={<h5>On</h5>}
+                off={<h5>Off</h5>}
+                size="lg"
+                active={FanChecked}
+                onstyle="success"
+                offstyle="secondary"
+                disabled={!FanConnected || !isConnected || isFanLoading}
+              />
+              {isFanLoading && (
+                <span className="spinner-border spinner-border-sm text-primary"></span>
+              )}
+            </div>
           </div>
 
           {/* Optional error message */}
@@ -213,7 +186,7 @@ function Switch() {
             !FanConnected ||
             !LightConnected ||
             !TempConnected) && (
-            <p className="error-message">
+            <p className="error-message text-danger text-center mt-4">
               One or more devices are not connected. Please check your
               connection.
             </p>

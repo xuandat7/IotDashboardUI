@@ -16,6 +16,7 @@ import Dashboard from "./component/Dashboard";
 import Users from "./component/Users";
 import DataSensor from "./component/DataSensor";
 import ActionHistory from "./component/ActionHistory";
+import Footer from "./component/Footer";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/ActionHistory" element={<ActionHistory/>} />
           <Route path="/users" element={<Users />} />
         </Routes>
+        <Footer/>
 
       </BrowserRouter>
 

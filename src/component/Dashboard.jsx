@@ -97,24 +97,16 @@ function Dashboard() {
             }}
           >
             <div className="card-body">
-              <div className="d-flex justify-content-between">
-                <i className="bi bi-thermometer icon"></i>
-                {temperature < 14 && <i className="bi bi-snow2"></i>}
-                {temperature > 31 && (
-                  <i className="bi bi-brightness-high-fill"></i>
-                )}
-                <div className="text-right text-dark">
-                  <h5>{temperature}°C</h5>
-                  <p>Nhiệt độ</p>
-                  <small className="text-muted">
-                    {temperature > 30
-                      ? "High"
-                      : temperature < 18
-                      ? "Low"
-                      : "Normal"}
-                  </small>
-                </div>
+              <i className="bi bi-thermometer icon"></i>
+              <div className="card-content">
+                <h5>{temperature}°C</h5>
+                <p>Nhiệt độ</p>
+                <small className="text-muted">
+                  {temperature > 30 ? "High" : temperature < 18 ? "Low" : "Normal"}
+                </small>
               </div>
+              {temperature < 14 && <i className="bi bi-snow2 status-icon"></i>}
+              {temperature > 31 && <i className="bi bi-brightness-high-fill status-icon"></i>}
             </div>
           </div>
         </div>
@@ -125,19 +117,16 @@ function Dashboard() {
             className="card"
             style={{
               background: getHumidityGradient(humidity),
-              transition: "background 0.5s ease-in-out", // Transition for background color
             }}
           >
             <div className="card-body">
-              <div className="d-flex justify-content-between">
-                <i className="bi bi-moisture icon"></i>
-                <div className="text-right text-light">
-                  <h5>{humidity}%</h5>
-                  <p>Độ ẩm</p>
-                  <small className="text-muted">
-                    {humidity > 70 ? "High" : humidity < 30 ? "Low" : "Normal"}
-                  </small>
-                </div>
+              <i className="bi bi-moisture icon"></i>
+              <div className="card-content">
+                <h5>{humidity}%</h5>
+                <p>Độ ẩm</p>
+                <small className="text-muted">
+                  {humidity > 70 ? "High" : humidity < 30 ? "Low" : "Normal"}
+                </small>
               </div>
             </div>
           </div>
@@ -149,23 +138,16 @@ function Dashboard() {
             className="card"
             style={{
               background: getLightGradient(brightness),
-              transition: "background 0.5s ease", // Transition for background color
             }}
           >
             <div className="card-body">
-              <div className="d-flex justify-content-between">
-                <i className="bi bi-brightness-high icon"></i>
-                <div className="text-right">
-                  <h5>{brightness} lux</h5>
-                  <p>Độ sáng</p>
-                  <small className="text-muted">
-                    {brightness > 100
-                      ? "High"
-                      : brightness < 40
-                      ? "Low"
-                      : "Normal"}
-                  </small>
-                </div>
+              <i className="bi bi-brightness-high icon"></i>
+              <div className="card-content">
+                <h5>{brightness} lux</h5>
+                <p>Độ sáng</p>
+                <small className="text-muted">
+                  {brightness > 100 ? "High" : brightness < 40 ? "Low" : "Normal"}
+                </small>
               </div>
             </div>
           </div>

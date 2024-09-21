@@ -106,7 +106,7 @@ function Switch() {
   return (
     <section className="switch-section">
       <div className="row justify-content-center">
-        <div className="card card-switch shadow p-3 mt-3 bg-white rounded">
+        <div className="card card-switch shadow p-3 mt-4 bg-white rounded">
           <h5 className="text-center mb-4">Device Control Panel</h5>
 
           <div className="switch-container">
@@ -186,9 +186,8 @@ function Switch() {
             !FanConnected ||
             !LightConnected ||
             !TempConnected) && (
-            <p className="error-message text-danger text-center mt-4">
-              One or more devices are not connected. Please check your
-              connection.
+            <p className="error-message text-danger text-center">
+              Please check your connection.
             </p>
           )}
         </div>

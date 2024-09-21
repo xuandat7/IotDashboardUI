@@ -3,6 +3,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import * as moment from "moment-timezone";
+import './ActionHistory.css';
 
 function ActionHistory() {
   const [data, setData] = useState({ rows: [], count: 0 });
@@ -172,9 +173,10 @@ function ActionHistory() {
     <main id="main" className="main">
       <h2 className="text-left">Action History</h2>
       <div className="row mb-3 mt-3">
-        <div className="col-md-2">
+        <div className="col-md-2 dropdown-container">
+          
           <select
-            className="form-control"
+            className="form-select"
             value={searchCategory}
             onChange={handleCategoryChange}
           >
@@ -183,8 +185,9 @@ function ActionHistory() {
             <option value="timestamp">Timestamp</option>
             <option value="all">All</option>
           </select>
+          
         </div>
-        <div className="col-lg-8">
+        <div className="col-lg-10">
           <input
             type="text"
             className="form-control"
@@ -271,7 +274,7 @@ function ActionHistory() {
           <div className="row">
             <div className="col-lg-2">
               <div className="form-group d-flex align-items-center">
-                <label>Rows:</label>
+                <label>Limit:</label>
                 <input
                   type="number"
                   className="form-control mx-2"

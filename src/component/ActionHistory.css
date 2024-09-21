@@ -1,3 +1,19 @@
-.limit {
-    width: fit-content;
+.dropdown-container {
+    position: relative;
+    display: inline-block;
+
 }
+
+.custom-select-with-icon {
+    padding-right: 30px;
+    appearance: none;
+    /* Hide the default dropdown arrow */
+    background-color: #fff;
+    /* Ensure it matches the form's styling */
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+

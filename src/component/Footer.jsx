@@ -10,8 +10,10 @@ const Footer = () => {
           © 2024 Tran Xuan Dat. All rights reserved.
         </div>
         <div style={styles.socialIcons}>
-          <a href="https://www.instagram.com/sprindat"><FaInstagram style={styles.icon}  /></a>
-          <a href="https://www.facebook.com/xdTran1106"><FaFacebook style={styles.icon} /></a>
+          {/* chuyển sang tab mới */}
+
+          <a href="https://www.instagram.com/sprindat"  target="_blank" rel="noopener noreferrer"><FaInstagram style={styles.icon}  /></a>
+          <a href="https://www.facebook.com/xdTran1106" target="_blank" rel="noopener noreferrer"><FaFacebook style={styles.icon} /></a>
           
           
         </div>

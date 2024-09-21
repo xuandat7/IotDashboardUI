@@ -171,7 +171,7 @@ function DataSensor() {
       <div className="row mb-3 mt-3">
         <div className="col-md-2">
           <select
-            className="form-control"
+            className="form-select"
             value={searchCategory}
             onChange={handleCategoryChange}
           >
@@ -182,7 +182,7 @@ function DataSensor() {
             <option value="all">All</option>
           </select>
         </div>
-        <div className="col-lg-8">
+        <div className="col-lg-10">
           <input
             type="text"
             className="form-control"

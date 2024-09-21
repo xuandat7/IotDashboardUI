@@ -1,62 +1,95 @@
-/* Users.css */
-
-
-.user-section {
+/* Main container */
+.user-main {
+    padding: 20px;
+    background-color: #f7f7f7;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.user-card {
-    display: flex;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    overflow: hidden;
-    width: fit-content;
-    background-color: #f9f9f9;
-}
-
-.user-image {
-    width: 200px;
-    height: 300px;
-    object-fit: cover;
-}
-
-.user-info {
-    padding: 20px;
-    flex-grow: 1;
-}
-
-.user-info h2 {
-    margin: 0;
-    font-size: 28px;
-    margin-bottom: 10px;
-    font-weight: bold;
-    font-family: 'Inter', sans-serif;
-}
-
-.separator {
-    border: 0;
-    height: 2px;
-    background-color: #3f3a3a;
-    margin: 15px 0;
-}
-
-.user-details {
+    min-height: 100vh;
+  }
+  
+  /* User card container */
+  .user-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
     width: 100%;
-    border-spacing: 0;
+    overflow: hidden;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+  }
+  
+  /* User image */
+  .user-image {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #4a90e2;
+    margin-bottom: 20px;
+  }
+  
+  /* User name */
+  .user-info h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  /* Separator line */
+  .separator {
+    border: 0;
+    height: 1px;
+    width: 80%;
+    background-color: #ddd;
+    margin: 10px auto;
+  }
+  
+  /* User details table */
+  .user-details {
+    width: 100%;
     margin-top: 10px;
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-}
-
-.user-details td {
-    padding: 8px 0;
-    /* font-size: 1.1em; */
-}
-
-.user-details td:first-child {
-    padding-right: 10px;
     text-align: left;
-    white-space: nowrap;
-}
+  }
+  
+  .user-details td {
+    padding: 10px 0;
+    font-size: 16px;
+    color: #555;
+  }
+  
+  /* Highlighted labels */
+  .user-details td:first-child {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Links */
+  .user-details a {
+    color: #4a90e2;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  
+  .user-details a:hover {
+    color: #0077cc;
+    text-decoration: underline;
+  }
+  
+  /* Hover effect for the card */
+  .user-card:hover {
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .user-card {
+      max-width: 100%;
+      padding: 15px;
+    }
+  }
+  

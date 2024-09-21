@@ -43,23 +43,6 @@
     }
 }
 
-@keyframes light-on-animation {
-    0% {
-        opacity: 0.5;
-        transform: rotate(0deg);
-    }
-
-    50% {
-        opacity: 1;
-        transform: rotate(20deg);
-    }
-
-    100% {
-        opacity: 0.5;
-        transform: rotate(0deg);
-    }
-}
-
 @keyframes fan-on-animation {
     0% {
         transform: rotate(0deg);
@@ -70,12 +53,37 @@
     }
 }
 
-.icon-temperature-active {
-    animation: temperature-animation 1s ease-in-out infinite;
+.icon-light-active {
+    color: rgba(255, 255, 204, 1); /* Initial icon color */
+    animation: light-icon-animation 1.5s ease-in-out infinite,
+               icon-color-change 1.5s ease-in-out infinite;
 }
 
-.icon-light-active {
-    animation: light-on-animation 1.5s ease-in-out infinite;
+/* Keyframe animation for glowing effect on icon */
+@keyframes light-icon-animation {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(255, 255, 204, 0.8), 0 0 20px rgba(255, 255, 204, 0.6);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(255, 255, 204, 1), 0 0 30px rgba(255, 255, 204, 0.9);
+    }
+}
+
+/* Keyframe animation for changing the icon color */
+@keyframes icon-color-change {
+    0%, 100% {
+        color: rgba(255, 255, 204, 1); /* Yellow */
+    }
+    33% {
+        color: rgba(238, 201, 145, 0.897); /* Orange */
+    }
+    66% {
+        color: rgba(89, 240, 240, 0.829); /* Light Blue */
+    }
+}
+
+.icon-temperature-active {
+    animation: temperature-animation 1s ease-in-out infinite;
 }
 
 .icon-fan-active {

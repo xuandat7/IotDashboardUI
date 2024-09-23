@@ -9,7 +9,7 @@ function Dashboard() {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/SensorData/sort?sortField=createdAt&sortOrder=desc&page=1&limit=1",
+        "http://localhost:3001/SensorData?page=1&limit=1&sortField=createdAt&sortOrder=DESC",
         {
           headers: {
             "Content-Type": "application/json",

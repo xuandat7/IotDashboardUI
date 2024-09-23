@@ -37,7 +37,7 @@ function Charts() {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/SensorData/sort?sortField=createdAt&sortOrder=desc&page=1&limit=10",
+        "http://localhost:3001/SensorData?page=1&limit=10&sortField=createdAt&sortOrder=DESC",
         {
           headers: {
             "Content-Type": "application/json",

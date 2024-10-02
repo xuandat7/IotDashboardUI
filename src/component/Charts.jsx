@@ -31,10 +31,17 @@ function Charts() {
         backgroundColor: "rgba(255, 206, 86, 0.2)",
         fill: true,
       },
+      {
+        label: "Wind Speed (m/s)",
+        data: [],
+        borderColor: "rgba(75, 192, 192, 1)",
+        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        fill: true,
+      },
     ],
   });
 
-  const fetchData = async () => {
+  const fetchSensorData = async () => {
     try {
       const response = await fetch(
         "http://localhost:3001/SensorData?page=1&limit=10&sortField=createdAt&sortOrder=DESC",
@@ -58,8 +65,28 @@ function Charts() {
         time: new Date(item.createdAt).toLocaleTimeString(),
       }));
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching sensor data:", error);
       return [];
+    }
+  };
+
+  const fetchWindData = async () => {
+    try {
+      const response = await fetch("http://localhost:3001/wind/now", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.windSpeed;
+    } catch (error) {
+      console.error("Error fetching wind data:", error);
+      return null;
     }
   };
 
@@ -79,7 +106,7 @@ function Charts() {
         plugins: {
           title: {
             display: true,
-            text: "Temperature, Humidity, and Brightness Chart",
+            text: "Temperature, Humidity, Brightness Chart",
             font: {
               size: 18,
               family: "'Poppins', sans-serif",
@@ -111,20 +138,30 @@ function Charts() {
     });
 
     const updateChart = async () => {
-      const newData = await fetchData();
+      const sensorData = await fetchSensorData();
+      const windSpeed = await fetchWindData();
 
-      if (newData.length > 0) {
+      if (sensorData.length > 0) {
         setChartData((prevData) => {
-          const updatedLabels = newData.map((item) => item.time).reverse();
-          const updatedTempData = newData
+          const updatedLabels = sensorData.map((item) => item.time).reverse();
+          const updatedTempData = sensorData
             .map((item) => item.temperature)
             .reverse();
-          const updatedHumidityData = newData
+          const updatedHumidityData = sensorData
             .map((item) => item.humidity)
             .reverse();
-          const updatedBrightnessData = newData
+          const updatedBrightnessData = sensorData
             .map((item) => item.brightness)
             .reverse();
+          
+          //Cập nhật dữ liệu gió
+          const updatedWindSpeedData = [...prevData.datasets[3].data];
+          if (windSpeed !== null) {
+            updatedWindSpeedData.push(windSpeed);
+            if (updatedWindSpeedData.length > 10) {
+              updatedWindSpeedData.shift();
+            }
+          }
 
           return {
             labels: updatedLabels,
@@ -132,6 +169,7 @@ function Charts() {
               { ...prevData.datasets[0], data: updatedTempData },
               { ...prevData.datasets[1], data: updatedHumidityData },
               { ...prevData.datasets[2], data: updatedBrightnessData },
+              { ...prevData.datasets[3], data: updatedWindSpeedData },
             ],
           };
         });

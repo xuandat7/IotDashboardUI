@@ -39,7 +39,7 @@ function Switch() {
       }
     };
 
-    const intervalId = setInterval(fetchDeviceStatus, 2000);
+    const intervalId = setInterval(fetchDeviceStatus, 500);
     return () => clearInterval(intervalId); // Cleanup on component unmount
   }, []);
 

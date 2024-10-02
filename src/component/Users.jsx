@@ -21,7 +21,7 @@ function Users() {
 
   return (
     <main id="main" className="user-main">
-      <section className="user-section">
+      <section className="user-section-lg">
         <div className="user-card">
           <img src={user.imageUrl} alt={`${user.name}`} className="user-image" />
           <div className="user-info">
@@ -34,19 +34,19 @@ function Users() {
                   <td>{user.email}</td>
                 </tr>
                 <tr>
-                  <td>Lớp tín chỉ:</td>
+                  <td>Lớp TC:</td>
                   <td>{user.classTC}</td>
                 </tr>
                 <tr>
-                  <td>Mã sinh viên:</td>
+                  <td>MSV:</td>
                   <td>{user.id}</td>
                 </tr>
                 <tr>
-                  <td>Nhóm môn học:</td>
+                  <td>Lớp MH:</td>
                   <td>{user.nhomMH}</td>
                 </tr>
                 <tr>
-                  <td>Link GitHub UI:</td>
+                  <td>GitHub UI:</td>
                   <td>
                     <a href={user.linkGitHubUI} target="_blank" rel="noopener noreferrer">
                       {user.linkGitHubUI}
@@ -54,7 +54,7 @@ function Users() {
                   </td>
                 </tr>
                 <tr>
-                  <td>Link GitHub API:</td>
+                  <td>GitHub API:</td>
                   <td>
                     <a href={user.linkGitHubAPI} target="_blank" rel="noopener noreferrer">
                       {user.linkGitHubAPI}
@@ -62,7 +62,7 @@ function Users() {
                   </td>
                 </tr>
                 <tr>
-                  <td>Link Swagger:</td>
+                  <td>Swagger:</td>
                   <td>
                     <a href={user.linkSwagger} target="_blank" rel="noopener noreferrer">
                       {user.linkSwagger}
@@ -70,7 +70,7 @@ function Users() {
                   </td>
                 </tr>
                 <tr>
-                  <td>Link PDF:</td>
+                  <td>PDF:</td>
                   <td>
                     <a href={user.FilePDF} target="_blank" rel="noopener noreferrer">
                       Download PDF

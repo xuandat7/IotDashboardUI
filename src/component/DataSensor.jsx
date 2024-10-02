@@ -12,6 +12,8 @@ function DataSensor() {
   const [isAscending, setIsAscending] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [temperatureCount, setTemperatureCount] = useState(0);
+  const [wind, setWind] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +37,18 @@ function DataSensor() {
       }
     };
 
+    const fetchTemperatureCount = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:3001/SensorData/temperature"
+        );
+        setTemperatureCount(response.data.count);
+      } catch (error) {
+        console.error("Error fetching temperature count:", error);
+      }
+    };
+
+    fetchTemperatureCount();
     fetchData();
   }, [
     currentPage,
@@ -168,6 +182,9 @@ function DataSensor() {
   return (
     <main id="main" className="main">
       <h2 className="text-left">Data Sensor</h2>
+      {/* <div className="mb-3">
+        <strong>Total temperature records: {temperatureCount}</strong>
+      </div> */}
       <div className="row mb-3 mt-3">
         <div className="col-md-2">
           <select
